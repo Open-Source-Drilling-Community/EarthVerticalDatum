@@ -1,0 +1,33 @@
+@page "/EarthVerticalDatumModel"
+@inject IEarthVerticalDatumAPIUtils Api
+
+<MudPaper Class="pa-6 mt-4" Elevation="2">
+    <MudText Typo="Typo.h4">Loaded geoid model</MudText>
+    @if (model == null)
+    {
+        <MudProgressLinear Indeterminate="true" Class="mt-4" />
+    }
+    else
+    {
+        <MudSimpleTable Class="mt-4">
+            <tbody>
+                <tr><th>Name</th><td>@model.Name</td></tr>
+                <tr><th>ID</th><td>@model.ID</td></tr>
+                <tr><th>Description</th><td>@model.Description</td></tr>
+                <tr><th>Data timestamp</th><td>@model.DataDateTime</td></tr>
+                <tr><th>Grid resolution</th><td>@model.GridResolutionMinutes arc minutes</td></tr>
+                <tr><th>Interpolation</th><td>@model.Interpolation</td></tr>
+                <tr><th>Maximum/RMS interpolation error</th><td>@model.MaximumInterpolationError m / @model.RMSInterpolationError m</td></tr>
+                <tr><th>Source</th><td>@model.SourceVerticalDatum</td></tr>
+                <tr><th>Target</th><td>@model.TargetVerticalDatum</td></tr>
+                <tr><th>Depth positive direction</th><td>@model.DepthPositiveDirection</td></tr>
+                <tr><th>Coefficient SHA-256</th><td class="hash">@model.CoefficientSHA256</td></tr>
+            </tbody>
+        </MudSimpleTable>
+    }
+</MudPaper>
+
+@code {
+    private EarthVerticalDatumModelInfo? model;
+    protected override async Task OnInitializedAsync() => model = await Api.ClientEarthVerticalDatum.GetEarthVerticalDatumModelInfoAsync();
+}

@@ -1,0 +1,3 @@
+REST: /EarthVerticalDatum/api/EarthVerticalDatum/ConvertMeanSeaLevelToWgs84
+MCP: /EarthVerticalDatum/api/mcp
+Swagger: /EarthVerticalDatum/api/swagger

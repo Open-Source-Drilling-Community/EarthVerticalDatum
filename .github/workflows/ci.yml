@@ -1,0 +1,52 @@
+name: Build, generate shared model, and test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 8.0.x
+      - name: Restore local tools
+        run: dotnet tool restore
+      - name: Restore solution
+        run: dotnet restore EarthVerticalDatum.sln
+      - name: Build service for OpenAPI generation
+        run: dotnet build Service/Service.csproj --configuration Release --no-restore
+      - name: Regenerate distributed shared model
+        run: |
+          dotnet swagger tofile --output ModelSharedOut/json-schemas/EarthVerticalDatumFullName.json Service/bin/Release/net8.0/Service.dll v1
+          dotnet run --project ModelSharedOut/ModelSharedOut.csproj --configuration Release
+      - name: Verify generated contracts are committed
+        run: git diff --exit-code -- ModelSharedOut/EarthVerticalDatumMergedModel.cs ModelSharedOut/json-schemas/EarthVerticalDatumFullName.json Service/wwwroot/json-schema/EarthVerticalDatumMergedModel.json
+      - name: Build solution
+        run: dotnet build EarthVerticalDatum.sln --configuration Release --no-restore
+      - name: Test solution
+        run: dotnet test EarthVerticalDatum.sln --configuration Release --no-build --logger "trx;LogFileName=tests.trx" --collect "XPlat Code Coverage"
+      - name: Upload test results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-results
+          path: '**/TestResults/**'
+          if-no-files-found: ignore
+
+  helm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: azure/setup-helm@v5
+      - run: helm lint Service/charts/osdcdrillingearthverticaldatumservice
+      - run: helm lint WebApp/charts/osdcdrillingearthverticaldatumwebappclient
+      - run: helm template earthverticaldatum-service Service/charts/osdcdrillingearthverticaldatumservice --set ingress.enabled=true > service.yaml
+      - run: helm template earthverticaldatum-webapp WebApp/charts/osdcdrillingearthverticaldatumwebappclient --set ingress.enabled=true > webapp.yaml

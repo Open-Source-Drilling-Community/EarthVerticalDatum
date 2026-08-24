@@ -1,0 +1,27 @@
+@page "/StatisticsEarthVerticalDatum"
+@inject IEarthVerticalDatumAPIUtils Api
+
+<MudPaper Class="pa-6 mt-4" Elevation="2">
+    <MudText Typo="Typo.h4">Usage statistics</MudText>
+    <MudText Typo="Typo.body2" Class="mb-4">Counters are in-memory and scoped to the service replica selected by Kubernetes.</MudText>
+    @if (statistics == null)
+    {
+        <MudProgressLinear Indeterminate="true" />
+    }
+    else
+    {
+        <MudSimpleTable>
+            <tbody>
+                <tr><th>REST conversions</th><td>@statistics.RestConversions</td></tr>
+                <tr><th>MCP conversions</th><td>@statistics.MCPConversions</td></tr>
+                <tr><th>Failed conversions</th><td>@statistics.FailedConversions</td></tr>
+                <tr><th>Positions converted</th><td>@statistics.PositionsConverted</td></tr>
+            </tbody>
+        </MudSimpleTable>
+    }
+</MudPaper>
+
+@code {
+    private UsageStatisticsEarthVerticalDatum? statistics;
+    protected override async Task OnInitializedAsync() => statistics = await Api.ClientEarthVerticalDatum.GetEarthVerticalDatumUsageStatisticsAsync();
+}

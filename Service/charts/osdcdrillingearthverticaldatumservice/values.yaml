@@ -1,0 +1,60 @@
+replicaCount: 1
+nameOverride: "osdcdrillingearthverticaldatumservice"
+fullnameOverride: osdcearthverticaldatumservice
+image:
+  repository: docker.io/digiwells/osdcdrillingearthverticaldatumservice
+  tag: "stable"
+  pullPolicy: Always
+imagePullSecrets: []
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/path: /EarthVerticalDatum/api/metrics
+  prometheus.io/port: "8080"
+podLabels: {}
+podSecurityContext: {}
+securityContext: {}
+service:
+  type: ClusterIP
+  port: 80
+  annotations:
+    description: "A stateless microservice for converting EGM84 mean-sea-level depths to WGS84 ellipsoidal depths"
+earthVerticalDatum:
+  maximumPositionsPerRequest: 10000
+resources: {}
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+ingress:
+  enabled: true
+  className: public
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+  hosts:
+    - host: localhost
+      paths:
+        - path: /(?i)earthverticaldatum/api
+          pathType: ImplementationSpecific
+    - host: dev.digiwells.no
+      paths:
+        - path: /(?i)earthverticaldatum/api
+          pathType: ImplementationSpecific
+    - host: app.digiwells.no
+      paths:
+        - path: /(?i)earthverticaldatum/api
+          pathType: ImplementationSpecific
+    - host: awe.web.intra.norceresearch.no
+      paths:
+        - path: /(?i)earthverticaldatum/api
+          pathType: ImplementationSpecific
+  tls: []
+probes:
+  enabled: false
+nodeSelector: {}
+tolerations: []
+affinity: {}

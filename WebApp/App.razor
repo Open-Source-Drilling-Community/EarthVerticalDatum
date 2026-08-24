@@ -1,0 +1,12 @@
+<Router AppAssembly="@typeof(App).Assembly"
+        AdditionalAssemblies="new[] { typeof(OSDC.Drilling.EarthVerticalDatum.WebPages.EarthVerticalDatumCalculation).Assembly }">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+    </Found>
+    <NotFound>
+        <LayoutView Layout="@typeof(MainLayout)">
+            <MudAlert Severity="Severity.Warning">The requested Earth Vertical Datum page was not found.</MudAlert>
+        </LayoutView>
+    </NotFound>
+</Router>

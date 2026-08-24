@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "earthverticaldatumservice.fullname" . }}-test-connection"
+  labels:
+    {{- include "earthverticaldatumservice.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ["wget"]
+      args: ["{{ include "earthverticaldatumservice.fullname" . }}:{{ .Values.service.port }}/EarthVerticalDatum/api/health/live"]
+  restartPolicy: Never

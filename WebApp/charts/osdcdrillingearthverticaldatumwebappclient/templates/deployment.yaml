@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "earthverticaldatumwebapp.fullname" . }}
+  labels: {{- include "earthverticaldatumwebapp.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels: {{- include "earthverticaldatumwebapp.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "earthverticaldatumwebapp.selectorLabels" . | nindent 8 }}
+        {{- with .Values.podLabels }}{{ toYaml . | nindent 8 }}{{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "earthverticaldatumwebapp.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - { name: ASPNETCORE_URLS, value: "http://+:8080" }
+            - { name: EarthVerticalDatumHostURL, value: {{ .Values.configuration.earthVerticalDatumHostURL | quote }} }
+            - { name: UnitConversionHostURL, value: {{ .Values.configuration.unitConversionHostURL | quote }} }
+          ports:
+            - { name: http, containerPort: 8080 }
+          {{- if .Values.probes.enabled }}
+          readinessProbe:
+            httpGet: { path: /EarthVerticalDatum/webapp/health/ready, port: http }
+            initialDelaySeconds: 5
+          livenessProbe:
+            httpGet: { path: /EarthVerticalDatum/webapp/health/live, port: http }
+            initialDelaySeconds: 10
+          {{- end }}
+          resources: {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - { name: tmp, mountPath: /tmp }
+            - { name: data-protection, mountPath: /home/app/.aspnet/DataProtection-Keys }
+      volumes:
+        - name: tmp
+          emptyDir: {}
+        - name: data-protection
+          emptyDir: {}
+      {{- with .Values.nodeSelector }}
+      nodeSelector: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity: {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations: {{- toYaml . | nindent 8 }}
+      {{- end }}

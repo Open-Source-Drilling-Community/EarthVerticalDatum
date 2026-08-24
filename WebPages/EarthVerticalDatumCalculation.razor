@@ -1,0 +1,131 @@
+@page "/EarthVerticalDatumCalculation"
+@inject ILogger<EarthVerticalDatumCalculation> Logger
+@inject ISnackbar Snackbar
+@inject IEarthVerticalDatumAPIUtils Api
+
+<MudUnitAndReferenceChoiceTag HttpHost="@Api.HostNameUnitConversion"
+                              HttpBasePath="@Api.HostBasePathUnitConversion"
+                              HttpController="UnitSystem/"
+                              UnitSystemName="@DataUtils.UnitAndReferenceParameters.UnitSystemName"
+                              UnitSystemNameChanged="@DataUtils.UpdateUnitSystemName">
+    <MudPaper Class="pa-6 mt-4" Elevation="2">
+        <MudText Typo="Typo.h4" Class="mb-2">Mean-sea-level to WGS84 depth conversion</MudText>
+        <MudText Typo="Typo.body2" Class="mb-5">
+            API latitude and longitude are WGS84 SI radians. Both input and output depths are SI metres and positive downward.
+            The input is referred to the EGM84 mean-sea-level geoid; the result is referred to the WGS84 ellipsoid.
+            Displayed units follow the selected OSDC unit system.
+        </MudText>
+        <MudGrid>
+            <MudItem xs="12" md="6">
+                <MudInputAngleWithUnitAdornment QuantityLabel="Sexagesimal latitude (WGS84)"
+                                                SIValueNullable="latitude"
+                                                SIValueNullableChanged="@(value => latitude = value)" />
+            </MudItem>
+            <MudItem xs="12" md="6">
+                <MudInputWithUnitAdornment QuantityName="PlaneAngleGeodesic"
+                                           QuantityLabel="Decimal latitude (WGS84)"
+                                           SIValueNullable="latitude"
+                                           SIValueNullableChanged="@(value => latitude = value)" />
+            </MudItem>
+            <MudItem xs="12" md="6">
+                <MudInputAngleWithUnitAdornment QuantityLabel="Sexagesimal longitude (WGS84)"
+                                                SIValueNullable="longitude"
+                                                SIValueNullableChanged="@(value => longitude = value)" />
+            </MudItem>
+            <MudItem xs="12" md="6">
+                <MudInputWithUnitAdornment QuantityName="PlaneAngleGeodesic"
+                                           QuantityLabel="Decimal longitude (WGS84)"
+                                           SIValueNullable="longitude"
+                                           SIValueNullableChanged="@(value => longitude = value)" />
+            </MudItem>
+            <MudItem xs="12" md="6">
+                <MudInputWithUnitAdornment QuantityName="DepthDrilling"
+                                           QuantityLabel="Depth below EGM84 mean sea level"
+                                           SIValueNullable="meanSeaLevelDepth"
+                                           SIValueNullableChanged="@(value => meanSeaLevelDepth = value)" />
+            </MudItem>
+            <MudItem xs="12">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="ConvertAsync" Disabled="converting">Convert</MudButton>
+                @if (converting)
+                {
+                    <MudProgressCircular Class="ml-4" Indeterminate="true" Size="Size.Small" />
+                }
+            </MudItem>
+        </MudGrid>
+
+        @if (result != null)
+        {
+            <MudDivider Class="my-5" />
+            <MudText Typo="Typo.h5" Class="mb-3">Conversion result</MudText>
+            <MudGrid>
+                <MudItem xs="12" md="6">
+                    <MudInputWithUnitAdornment QuantityName="DepthDrilling"
+                                               QuantityLabel="Depth below WGS84 ellipsoid"
+                                               ReadOnly="true"
+                                               SIValueNullable="result.Wgs84EllipsoidalDepth" />
+                </MudItem>
+            </MudGrid>
+            <MudText Typo="Typo.body2" Class="mt-4">
+                EGM84 geoid undulation: @result.GeoidUndulation.ToString("G12") m, positive upward.
+            </MudText>
+            <MudText Typo="Typo.caption">
+                Model: @model?.Name (@model?.ID), @model?.GridResolutionMinutes arc-minute grid, @model?.Interpolation interpolation.
+            </MudText>
+        }
+    </MudPaper>
+</MudUnitAndReferenceChoiceTag>
+
+@code {
+    private double? latitude;
+    private double? longitude;
+    private double? meanSeaLevelDepth;
+    private bool converting;
+    private EarthVerticalDatumSample? result;
+    private EarthVerticalDatumModelInfo? model;
+
+    private async Task ConvertAsync()
+    {
+        if (latitude is null || longitude is null || meanSeaLevelDepth is null)
+        {
+            Snackbar.Add("Latitude, longitude, and mean-sea-level depth are required.", Severity.Warning);
+            return;
+        }
+        if (!double.IsFinite(latitude.Value) || latitude < -Math.PI / 2 || latitude > Math.PI / 2 ||
+            !double.IsFinite(longitude.Value) || longitude < -Math.PI || longitude > Math.PI ||
+            !double.IsFinite(meanSeaLevelDepth.Value))
+        {
+            Snackbar.Add("The SI latitude, longitude, or depth is outside the supported range.", Severity.Warning);
+            return;
+        }
+
+        try
+        {
+            converting = true;
+            var request = new MeanSeaLevelToWgs84Request
+            {
+                Positions =
+                [
+                    new EarthVerticalDatumPosition
+                    {
+                        Latitude = latitude.Value,
+                        Longitude = longitude.Value,
+                        MeanSeaLevelDepth = meanSeaLevelDepth.Value
+                    }
+                ]
+            };
+            MeanSeaLevelToWgs84Response response = await Api.ClientEarthVerticalDatum.ConvertMeanSeaLevelToWgs84Async(request);
+            result = response.Samples?.FirstOrDefault();
+            model = response.Model;
+            Snackbar.Add("Vertical datum conversion completed.", Severity.Success);
+        }
+        catch (Exception exception)
+        {
+            Logger.LogError(exception, "Earth vertical datum conversion failed");
+            Snackbar.Add("Vertical datum conversion failed: " + exception.Message, Severity.Error);
+        }
+        finally
+        {
+            converting = false;
+        }
+    }
+}
