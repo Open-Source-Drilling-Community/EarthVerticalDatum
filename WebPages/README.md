@@ -2,7 +2,7 @@
 
 Reusable Blazor pages for the stateless OSDC Earth Vertical Datum service.
 
-- `/EarthVerticalDatumCalculation`: unit-aware conversion from EGM84 mean-sea-level depth to WGS84 ellipsoidal depth.
+- `/EarthVerticalDatumCalculation`: selectable unit-aware conversion in both directions between EGM84 mean-sea-level and WGS84 ellipsoidal depths.
 - `/EarthVerticalDatumModel`: model identity, interpolation accuracy, conventions, runtime, thread-safety, and grid hash.
 - `/StatisticsEarthVerticalDatum`: process-replica REST usage counters.
 

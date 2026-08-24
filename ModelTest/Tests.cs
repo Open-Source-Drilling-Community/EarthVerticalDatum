@@ -39,6 +39,45 @@ public class Tests
     }
 
     [Test]
+    public void InverseConversionChangesSignsOnlyAtTheGeographicLibBoundary()
+    {
+        const double latitude = 0.7;
+        const double longitude = -1.2;
+        const double wgs84EllipsoidalDepth = 1225;
+        Wgs84ToMeanSeaLevelResponse response = evaluator_.ConvertWgs84ToMeanSeaLevel(
+            InverseRequest(latitude, longitude, wgs84EllipsoidalDepth));
+
+        using var geoid = new Geoid("egm84-30", Path.Combine(AppContext.BaseDirectory, "VerticalDatumModelFiles"));
+        double orthometricHeight = geoid.ConvertHeight(latitude * 180 / Math.PI, longitude * 180 / Math.PI,
+            -wgs84EllipsoidalDepth, ConvertFlag.EllipsoidToGeoid);
+        double expectedDepth = -orthometricHeight;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.Samples, Has.Count.EqualTo(1));
+            Assert.That(response.Samples[0].MeanSeaLevelDepth, Is.EqualTo(expectedDepth).Within(1e-12));
+            Assert.That(response.Samples[0].GeoidUndulation,
+                Is.EqualTo(expectedDepth - wgs84EllipsoidalDepth).Within(1e-12));
+            Assert.That(response.Samples[0].Position.Wgs84EllipsoidalDepth, Is.EqualTo(wgs84EllipsoidalDepth));
+        });
+    }
+
+    [Test]
+    public void ForwardAndInverseConversionsRoundTrip()
+    {
+        const double latitude = 1.1;
+        const double longitude = 0.3;
+        const double originalMeanSeaLevelDepth = 987.654;
+        MeanSeaLevelToWgs84Response forward = evaluator_.ConvertMeanSeaLevelToWgs84(
+            Request(latitude, longitude, originalMeanSeaLevelDepth));
+        Wgs84ToMeanSeaLevelResponse inverse = evaluator_.ConvertWgs84ToMeanSeaLevel(
+            InverseRequest(latitude, longitude, forward.Samples[0].Wgs84EllipsoidalDepth));
+
+        Assert.That(inverse.Samples[0].MeanSeaLevelDepth,
+            Is.EqualTo(originalMeanSeaLevelDepth).Within(1e-10));
+    }
+
+    [Test]
     public void ModelInformationIsTraceableAndThreadSafe()
     {
         Assert.Multiple(() =>
@@ -81,6 +120,14 @@ public class Tests
         Assert.That(exception.Errors, Has.Some.Property("Code").EqualTo("too_many"));
     }
 
+    [Test]
+    public void InvalidInverseDepthRejectsCompleteRequest()
+    {
+        EarthVerticalDatumValidationException exception = Assert.Throws<EarthVerticalDatumValidationException>(
+            () => evaluator_.ConvertWgs84ToMeanSeaLevel(InverseRequest(0, 0, double.NaN)))!;
+        Assert.That(exception.Errors, Has.Some.Property("Property").EqualTo("Wgs84EllipsoidalDepth"));
+    }
+
     private static MeanSeaLevelToWgs84Request Request(double latitude, double longitude, double depth) => new()
     {
         Positions =
@@ -90,6 +137,19 @@ public class Tests
                 Latitude = latitude,
                 Longitude = longitude,
                 MeanSeaLevelDepth = depth
+            }
+        ]
+    };
+
+    private static Wgs84ToMeanSeaLevelRequest InverseRequest(double latitude, double longitude, double depth) => new()
+    {
+        Positions =
+        [
+            new Wgs84ToMeanSeaLevelPosition
+            {
+                Latitude = latitude,
+                Longitude = longitude,
+                Wgs84EllipsoidalDepth = depth
             }
         ]
     };

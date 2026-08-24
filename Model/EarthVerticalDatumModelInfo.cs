@@ -13,8 +13,10 @@ public class EarthVerticalDatumModelInfo
     public double RMSInterpolationError { get; set; }
     public string GeographicLibVersion { get; set; } = string.Empty;
     public string ReferenceEllipsoid { get; set; } = "WGS84";
-    public string SourceVerticalDatum { get; set; } = "EGM84 mean-sea-level geoid";
-    public string TargetVerticalDatum { get; set; } = "WGS84 reference ellipsoid";
+    public List<string> SupportedVerticalDatums { get; set; } =
+        ["EGM84 mean-sea-level geoid", "WGS84 reference ellipsoid"];
+    public List<string> SupportedConversionDirections { get; set; } =
+        ["EGM84 mean-sea-level geoid to WGS84 reference ellipsoid", "WGS84 reference ellipsoid to EGM84 mean-sea-level geoid"];
     public string DepthPositiveDirection { get; set; } = "down";
     public bool IsThreadSafe { get; set; }
     public string CoefficientSHA256 { get; set; } = string.Empty;

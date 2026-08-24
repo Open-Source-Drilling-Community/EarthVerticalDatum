@@ -9,12 +9,24 @@
                               UnitSystemName="@DataUtils.UnitAndReferenceParameters.UnitSystemName"
                               UnitSystemNameChanged="@DataUtils.UpdateUnitSystemName">
     <MudPaper Class="pa-6 mt-4" Elevation="2">
-        <MudText Typo="Typo.h4" Class="mb-2">Mean-sea-level to WGS84 depth conversion</MudText>
+        <MudText Typo="Typo.h4" Class="mb-2">Earth vertical datum conversion</MudText>
         <MudText Typo="Typo.body2" Class="mb-5">
-            API latitude and longitude are WGS84 SI radians. Both input and output depths are SI metres and positive downward.
-            The input is referred to the EGM84 mean-sea-level geoid; the result is referred to the WGS84 ellipsoid.
-            Displayed units follow the selected OSDC unit system.
+            Convert in either direction between the EGM84 mean-sea-level geoid and the WGS84 reference ellipsoid.
+            API latitude and longitude are WGS84 SI radians. Both depth values are SI metres and positive downward;
+            displayed units follow the selected OSDC unit system.
         </MudText>
+        <MudButton Class="mr-2 mb-4"
+                   Variant="@(fromMeanSeaLevel ? Variant.Filled : Variant.Outlined)"
+                   Color="Color.Primary"
+                   OnClick="@(() => SetDirection(true))">
+            Mean sea level → WGS84
+        </MudButton>
+        <MudButton Class="mb-4"
+                   Variant="@(!fromMeanSeaLevel ? Variant.Filled : Variant.Outlined)"
+                   Color="Color.Primary"
+                   OnClick="@(() => SetDirection(false))">
+            WGS84 → mean sea level
+        </MudButton>
         <MudGrid>
             <MudItem xs="12" md="6">
                 <MudInputAngleWithUnitAdornment QuantityLabel="Sexagesimal latitude (WGS84)"
@@ -40,9 +52,9 @@
             </MudItem>
             <MudItem xs="12" md="6">
                 <MudInputWithUnitAdornment QuantityName="DepthDrilling"
-                                           QuantityLabel="Depth below EGM84 mean sea level"
-                                           SIValueNullable="meanSeaLevelDepth"
-                                           SIValueNullableChanged="@(value => meanSeaLevelDepth = value)" />
+                                           QuantityLabel="@InputDepthLabel"
+                                           SIValueNullable="inputDepth"
+                                           SIValueNullableChanged="@(value => inputDepth = value)" />
             </MudItem>
             <MudItem xs="12">
                 <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="ConvertAsync" Disabled="converting">Convert</MudButton>
@@ -53,20 +65,20 @@
             </MudItem>
         </MudGrid>
 
-        @if (result != null)
+        @if (outputDepth != null)
         {
             <MudDivider Class="my-5" />
             <MudText Typo="Typo.h5" Class="mb-3">Conversion result</MudText>
             <MudGrid>
                 <MudItem xs="12" md="6">
                     <MudInputWithUnitAdornment QuantityName="DepthDrilling"
-                                               QuantityLabel="Depth below WGS84 ellipsoid"
+                                               QuantityLabel="@OutputDepthLabel"
                                                ReadOnly="true"
-                                               SIValueNullable="result.Wgs84EllipsoidalDepth" />
+                                               SIValueNullable="outputDepth" />
                 </MudItem>
             </MudGrid>
             <MudText Typo="Typo.body2" Class="mt-4">
-                EGM84 geoid undulation: @result.GeoidUndulation.ToString("G12") m, positive upward.
+                EGM84 geoid undulation: @geoidUndulation?.ToString("G12") m, positive upward.
             </MudText>
             <MudText Typo="Typo.caption">
                 Model: @model?.Name (@model?.ID), @model?.GridResolutionMinutes arc-minute grid, @model?.Interpolation interpolation.
@@ -78,21 +90,41 @@
 @code {
     private double? latitude;
     private double? longitude;
-    private double? meanSeaLevelDepth;
+    private double? inputDepth;
     private bool converting;
-    private EarthVerticalDatumSample? result;
+    private bool fromMeanSeaLevel = true;
+    private double? outputDepth;
+    private double? geoidUndulation;
     private EarthVerticalDatumModelInfo? model;
+
+    private string InputDepthLabel => fromMeanSeaLevel
+        ? "Depth below EGM84 mean sea level"
+        : "Depth below WGS84 ellipsoid";
+
+    private string OutputDepthLabel => fromMeanSeaLevel
+        ? "Depth below WGS84 ellipsoid"
+        : "Depth below EGM84 mean sea level";
+
+    private void SetDirection(bool value)
+    {
+        if (fromMeanSeaLevel == value) return;
+        fromMeanSeaLevel = value;
+        inputDepth = null;
+        outputDepth = null;
+        geoidUndulation = null;
+        model = null;
+    }
 
     private async Task ConvertAsync()
     {
-        if (latitude is null || longitude is null || meanSeaLevelDepth is null)
+        if (latitude is null || longitude is null || inputDepth is null)
         {
-            Snackbar.Add("Latitude, longitude, and mean-sea-level depth are required.", Severity.Warning);
+            Snackbar.Add("Latitude, longitude, and input depth are required.", Severity.Warning);
             return;
         }
         if (!double.IsFinite(latitude.Value) || latitude < -Math.PI / 2 || latitude > Math.PI / 2 ||
             !double.IsFinite(longitude.Value) || longitude < -Math.PI || longitude > Math.PI ||
-            !double.IsFinite(meanSeaLevelDepth.Value))
+            !double.IsFinite(inputDepth.Value))
         {
             Snackbar.Add("The SI latitude, longitude, or depth is outside the supported range.", Severity.Warning);
             return;
@@ -101,21 +133,48 @@
         try
         {
             converting = true;
-            var request = new MeanSeaLevelToWgs84Request
+            if (fromMeanSeaLevel)
             {
-                Positions =
-                [
-                    new EarthVerticalDatumPosition
-                    {
-                        Latitude = latitude.Value,
-                        Longitude = longitude.Value,
-                        MeanSeaLevelDepth = meanSeaLevelDepth.Value
-                    }
-                ]
-            };
-            MeanSeaLevelToWgs84Response response = await Api.ClientEarthVerticalDatum.ConvertMeanSeaLevelToWgs84Async(request);
-            result = response.Samples?.FirstOrDefault();
-            model = response.Model;
+                var request = new MeanSeaLevelToWgs84Request
+                {
+                    Positions =
+                    [
+                        new EarthVerticalDatumPosition
+                        {
+                            Latitude = latitude.Value,
+                            Longitude = longitude.Value,
+                            MeanSeaLevelDepth = inputDepth.Value
+                        }
+                    ]
+                };
+                MeanSeaLevelToWgs84Response response = await Api.ClientEarthVerticalDatum
+                    .ConvertMeanSeaLevelToWgs84Async(request);
+                EarthVerticalDatumSample? sample = response.Samples?.FirstOrDefault();
+                outputDepth = sample?.Wgs84EllipsoidalDepth;
+                geoidUndulation = sample?.GeoidUndulation;
+                model = response.Model;
+            }
+            else
+            {
+                var request = new Wgs84ToMeanSeaLevelRequest
+                {
+                    Positions =
+                    [
+                        new Wgs84ToMeanSeaLevelPosition
+                        {
+                            Latitude = latitude.Value,
+                            Longitude = longitude.Value,
+                            Wgs84EllipsoidalDepth = inputDepth.Value
+                        }
+                    ]
+                };
+                Wgs84ToMeanSeaLevelResponse response = await Api.ClientEarthVerticalDatum
+                    .ConvertWgs84ToMeanSeaLevelAsync(request);
+                Wgs84ToMeanSeaLevelSample? sample = response.Samples?.FirstOrDefault();
+                outputDepth = sample?.MeanSeaLevelDepth;
+                geoidUndulation = sample?.GeoidUndulation;
+                model = response.Model;
+            }
             Snackbar.Add("Vertical datum conversion completed.", Severity.Success);
         }
         catch (Exception exception)

@@ -10,7 +10,7 @@
     <Title>OSDC.Drilling.EarthVerticalDatum.WebPages</Title>
     <Authors>Eric Cayeux</Authors>
     <Company>NORCE Research</Company>
-    <Description>Reusable Blazor pages for stateless EGM84 mean-sea-level to WGS84 depth conversion with OSDC unit-system support.</Description>
+    <Description>Reusable Blazor pages for stateless bidirectional EGM84 mean-sea-level and WGS84 ellipsoidal-depth conversion with OSDC unit-system support.</Description>
     <PackageTags>earthverticaldatum;drilling;blazor;razor;mudblazor;osdc</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/Open-Source-Drilling-Community/EarthVerticalDatum</RepositoryUrl>

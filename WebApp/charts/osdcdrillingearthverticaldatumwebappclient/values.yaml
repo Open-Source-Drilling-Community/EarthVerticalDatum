@@ -19,7 +19,7 @@ service:
   port: 80
   sessionAffinity: ClientIP
   annotations:
-    description: "A web application for converting EGM84 mean-sea-level depths to WGS84 ellipsoidal depths"
+    description: "A web application for bidirectional conversion between EGM84 mean-sea-level and WGS84 ellipsoidal depths"
 configuration:
   earthVerticalDatumHostURL: http://osdcearthverticaldatumservice/
   unitConversionHostURL: http://osdcunitconversionservice/

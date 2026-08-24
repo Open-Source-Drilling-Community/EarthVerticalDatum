@@ -21,7 +21,7 @@ service:
   type: ClusterIP
   port: 80
   annotations:
-    description: "A stateless microservice for converting EGM84 mean-sea-level depths to WGS84 ellipsoidal depths"
+    description: "A stateless microservice for bidirectional conversion between EGM84 mean-sea-level and WGS84 ellipsoidal depths"
 earthVerticalDatum:
   maximumPositionsPerRequest: 10000
 resources: {}

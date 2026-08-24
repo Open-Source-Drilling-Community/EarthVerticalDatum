@@ -41,6 +41,30 @@ public class EarthVerticalDatumController(
         }
     }
 
+    /// <summary>Synchronously converts WGS84 ellipsoidal depths to EGM84 mean-sea-level depths.</summary>
+    /// <remarks>This inverse operation is stateless. Latitude and longitude are WGS84 radians. Input and output depths are SI metres, positive downward from their explicitly named reference surfaces. The complete request is rejected if any position is invalid.</remarks>
+    [HttpPost("ConvertWgs84ToMeanSeaLevel", Name = "ConvertWgs84ToMeanSeaLevel")]
+    [ProducesResponseType(typeof(Wgs84ToMeanSeaLevelResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(EarthVerticalDatumValidationProblem), StatusCodes.Status422UnprocessableEntity)]
+    public ActionResult<Wgs84ToMeanSeaLevelResponse> ConvertWgs84ToMeanSeaLevel(
+        [FromBody] Wgs84ToMeanSeaLevelRequest request, CancellationToken cancellationToken)
+    {
+        statistics.IncrementConversion(false, request?.Positions?.Count ?? 0);
+        try
+        {
+            return Ok(evaluator.ConvertWgs84ToMeanSeaLevel(request, options.Value.MaximumPositionsPerRequest, cancellationToken));
+        }
+        catch (EarthVerticalDatumValidationException exception)
+        {
+            statistics.IncrementFailedConversion();
+            return UnprocessableEntity(new EarthVerticalDatumValidationProblem
+            {
+                Message = exception.Message,
+                Errors = exception.Errors.ToList()
+            });
+        }
+    }
+
     /// <summary>Returns the loaded EGM84-30 geoid model identity, resolution, interpolation accuracy, runtime version, and coefficient hash.</summary>
     [HttpGet("ModelInfo", Name = "GetEarthVerticalDatumModelInfo")]
     public ActionResult<EarthVerticalDatumModelInfo> GetEarthVerticalDatumModelInfo() => GetModelInfoResponse();

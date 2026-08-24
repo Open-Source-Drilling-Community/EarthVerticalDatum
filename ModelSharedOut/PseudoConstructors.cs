@@ -14,4 +14,17 @@ public static class PseudoConstructors
     {
         Positions = [ConstructEarthVerticalDatumPosition()]
     };
+
+    public static Wgs84ToMeanSeaLevelPosition ConstructWgs84ToMeanSeaLevelPosition() => new()
+    {
+        Latitude = 0,
+        Longitude = 0,
+        Wgs84EllipsoidalDepth = 0
+    };
+
+    public static Wgs84ToMeanSeaLevelRequest ConstructWgs84ToMeanSeaLevelRequest() => new()
+    {
+        Positions = [ConstructWgs84ToMeanSeaLevelPosition()]
+    };
+
 }

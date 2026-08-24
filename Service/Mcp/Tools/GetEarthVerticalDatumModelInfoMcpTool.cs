@@ -24,13 +24,13 @@ public sealed class GetEarthVerticalDatumModelInfoMcpTool(EarthVerticalDatumEval
         "RMSInterpolationError": { "type": "number", "description": "Published RMS interpolation error in metres for the selected method." },
         "GeographicLibVersion": { "type": "string", "description": "GeographicLib runtime version." },
         "ReferenceEllipsoid": { "type": "string", "const": "WGS84" },
-        "SourceVerticalDatum": { "type": "string", "description": "Source surface accepted by the conversion endpoint." },
-        "TargetVerticalDatum": { "type": "string", "description": "Target surface returned by the conversion endpoint." },
+        "SupportedVerticalDatums": { "type": "array", "items": { "type": "string" }, "minItems": 2, "description": "Vertical reference surfaces supported by the service." },
+        "SupportedConversionDirections": { "type": "array", "items": { "type": "string" }, "minItems": 2, "description": "Both supported conversion directions, expressed without implying a permanent source or target." },
         "DepthPositiveDirection": { "type": "string", "const": "down", "description": "Sign convention of public depth properties." },
         "IsThreadSafe": { "type": "boolean", "const": true, "description": "Whether the in-memory model supports concurrent requests." },
         "CoefficientSHA256": { "type": "string", "pattern": "^[0-9a-fA-F]{64}$", "description": "SHA-256 of the installed PGM grid file." }
       },
-      "required": ["Name", "ID", "Description", "DataDateTime", "GridResolutionMinutes", "Interpolation", "MaximumInterpolationError", "RMSInterpolationError", "GeographicLibVersion", "ReferenceEllipsoid", "SourceVerticalDatum", "TargetVerticalDatum", "DepthPositiveDirection", "IsThreadSafe", "CoefficientSHA256"],
+      "required": ["Name", "ID", "Description", "DataDateTime", "GridResolutionMinutes", "Interpolation", "MaximumInterpolationError", "RMSInterpolationError", "GeographicLibVersion", "ReferenceEllipsoid", "SupportedVerticalDatums", "SupportedConversionDirections", "DepthPositiveDirection", "IsThreadSafe", "CoefficientSHA256"],
       "additionalProperties": false
     }
     """)!;

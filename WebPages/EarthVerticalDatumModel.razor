@@ -18,8 +18,8 @@
                 <tr><th>Grid resolution</th><td>@model.GridResolutionMinutes arc minutes</td></tr>
                 <tr><th>Interpolation</th><td>@model.Interpolation</td></tr>
                 <tr><th>Maximum/RMS interpolation error</th><td>@model.MaximumInterpolationError m / @model.RMSInterpolationError m</td></tr>
-                <tr><th>Source</th><td>@model.SourceVerticalDatum</td></tr>
-                <tr><th>Target</th><td>@model.TargetVerticalDatum</td></tr>
+                <tr><th>Supported vertical datums</th><td>@string.Join("; ", model.SupportedVerticalDatums)</td></tr>
+                <tr><th>Supported directions</th><td>@string.Join("; ", model.SupportedConversionDirections)</td></tr>
                 <tr><th>Depth positive direction</th><td>@model.DepthPositiveDirection</td></tr>
                 <tr><th>Coefficient SHA-256</th><td class="hash">@model.CoefficientSHA256</td></tr>
             </tbody>

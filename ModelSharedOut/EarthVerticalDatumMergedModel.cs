@@ -242,6 +242,97 @@ namespace OSDC.Drilling.EarthVerticalDatum.ModelShared
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
+        /// Synchronously converts WGS84 ellipsoidal depths to EGM84 mean-sea-level depths.
+        /// </summary>
+        /// <remarks>
+        /// This inverse operation is stateless. Latitude and longitude are WGS84 radians. Input and output depths are SI metres, positive downward from their explicitly named reference surfaces. The complete request is rejected if any position is invalid.
+        /// </remarks>
+        /// <returns>OK</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<Wgs84ToMeanSeaLevelResponse> ConvertWgs84ToMeanSeaLevelAsync(Wgs84ToMeanSeaLevelRequest body = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    var json_ = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(body, JsonSerializerSettings);
+                    var content_ = new System.Net.Http.ByteArrayContent(json_);
+                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                    request_.Content = content_;
+                    request_.Method = new System.Net.Http.HttpMethod("POST");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+                    var urlBuilder_ = new System.Text.StringBuilder();
+                    if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
+                    // Operation Path: "EarthVerticalDatum/ConvertWgs84ToMeanSeaLevel"
+                    urlBuilder_.Append("EarthVerticalDatum/ConvertWgs84ToMeanSeaLevel");
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.IEnumerable<string>>();
+                        foreach (var item_ in response_.Headers)
+                            headers_[item_.Key] = item_.Value;
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<Wgs84ToMeanSeaLevelResponse>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
+                        }
+                        else
+                        if (status_ == 422)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<EarthVerticalDatumValidationProblem>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new ApiException<EarthVerticalDatumValidationProblem>("Unprocessable Content", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await ReadAsStringAsync(response_.Content, cancellationToken).ConfigureAwait(false);
+                            throw new ApiException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
         /// Returns the loaded EGM84-30 geoid model identity, resolution, interpolation accuracy, runtime version, and coefficient hash.
         /// </summary>
         /// <returns>OK</returns>
@@ -554,11 +645,11 @@ namespace OSDC.Drilling.EarthVerticalDatum.ModelShared
         [System.Text.Json.Serialization.JsonPropertyName("ReferenceEllipsoid")]
         public string ReferenceEllipsoid { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("SourceVerticalDatum")]
-        public string SourceVerticalDatum { get; set; }
+        [System.Text.Json.Serialization.JsonPropertyName("SupportedVerticalDatums")]
+        public System.Collections.Generic.ICollection<string> SupportedVerticalDatums { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("TargetVerticalDatum")]
-        public string TargetVerticalDatum { get; set; }
+        [System.Text.Json.Serialization.JsonPropertyName("SupportedConversionDirections")]
+        public System.Collections.Generic.ICollection<string> SupportedConversionDirections { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("DepthPositiveDirection")]
         public string DepthPositiveDirection { get; set; }
@@ -782,6 +873,127 @@ namespace OSDC.Drilling.EarthVerticalDatum.ModelShared
 
         [System.Text.Json.Serialization.JsonPropertyName("StatisticsRequests")]
         public long StatisticsRequests { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    /// <summary>
+    /// A WGS84 horizontal position and ellipsoidal depth expressed using OSDC SI conventions.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class Wgs84ToMeanSeaLevelPosition
+    {
+
+        /// <summary>
+        /// WGS84 geodetic latitude in SI radians, between -π/2 and π/2.
+        /// </summary>
+        [System.Text.Json.Serialization.JsonPropertyName("Latitude")]
+        [System.ComponentModel.DataAnnotations.Range(-1.5707963267948966D, 1.5707963267948966D)]
+        public double Latitude { get; set; }
+
+        /// <summary>
+        /// WGS84 geodetic longitude in SI radians, between -π and π.
+        /// </summary>
+        [System.Text.Json.Serialization.JsonPropertyName("Longitude")]
+        [System.ComponentModel.DataAnnotations.Range(-3.141592653589793D, 3.141592653589793D)]
+        public double Longitude { get; set; }
+
+        /// <summary>
+        /// Depth in SI metres, positive downward from the WGS84 reference ellipsoid. A negative value is above it.
+        /// </summary>
+        [System.Text.Json.Serialization.JsonPropertyName("Wgs84EllipsoidalDepth")]
+        public double Wgs84EllipsoidalDepth { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    /// <summary>
+    /// A stateless synchronous request to convert WGS84 ellipsoidal depths to mean-sea-level depths.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class Wgs84ToMeanSeaLevelRequest
+    {
+
+        /// <summary>
+        /// Positions and WGS84 ellipsoidal depths to convert. Any invalid item rejects the entire request.
+        /// </summary>
+        [System.Text.Json.Serialization.JsonPropertyName("Positions")]
+        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.MinLength(1)]
+        public System.Collections.Generic.ICollection<Wgs84ToMeanSeaLevelPosition> Positions { get; set; } = new System.Collections.ObjectModel.Collection<Wgs84ToMeanSeaLevelPosition>();
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    /// <summary>
+    /// EGM84-30 inverse-conversion results in the same order as the request positions.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class Wgs84ToMeanSeaLevelResponse
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("Model")]
+        public EarthVerticalDatumModelInfo Model { get; set; }
+
+        [System.Text.Json.Serialization.JsonPropertyName("Samples")]
+        public System.Collections.Generic.ICollection<Wgs84ToMeanSeaLevelSample> Samples { get; set; }
+
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
+
+        [System.Text.Json.Serialization.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties ?? (_additionalProperties = new System.Collections.Generic.Dictionary<string, object>()); }
+            set { _additionalProperties = value; }
+        }
+
+    }
+
+    /// <summary>
+    /// An input WGS84 position and its corresponding EGM84 mean-sea-level depth.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.6.2.0 (NJsonSchema v11.5.2.0 (Newtonsoft.Json v13.0.0.0))")]
+    public partial class Wgs84ToMeanSeaLevelSample
+    {
+
+        [System.Text.Json.Serialization.JsonPropertyName("Position")]
+        public Wgs84ToMeanSeaLevelPosition Position { get; set; }
+
+        /// <summary>
+        /// Depth in SI metres, positive downward from the EGM84 mean-sea-level geoid.
+        /// </summary>
+        [System.Text.Json.Serialization.JsonPropertyName("MeanSeaLevelDepth")]
+        public double MeanSeaLevelDepth { get; set; }
+
+        /// <summary>
+        /// EGM84 geoid undulation in SI metres, positive upward from the WGS84 ellipsoid to the geoid.
+        /// </summary>
+        [System.Text.Json.Serialization.JsonPropertyName("GeoidUndulation")]
+        public double GeoidUndulation { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
 

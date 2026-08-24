@@ -79,6 +79,57 @@
         }
       }
     },
+    "/EarthVerticalDatum/ConvertWgs84ToMeanSeaLevel": {
+      "post": {
+        "tags": [
+          "EarthVerticalDatum"
+        ],
+        "summary": "Synchronously converts WGS84 ellipsoidal depths to EGM84 mean-sea-level depths.",
+        "description": "This inverse operation is stateless. Latitude and longitude are WGS84 radians. Input and output depths are SI metres, positive downward from their explicitly named reference surfaces. The complete request is rejected if any position is invalid.",
+        "operationId": "ConvertWgs84ToMeanSeaLevel",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Wgs84ToMeanSeaLevelRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Wgs84ToMeanSeaLevelRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Wgs84ToMeanSeaLevelRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Wgs84ToMeanSeaLevelResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EarthVerticalDatumValidationProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/EarthVerticalDatum/ModelInfo": {
       "get": {
         "tags": [
@@ -168,12 +219,18 @@
             "type": "string",
             "nullable": true
           },
-          "SourceVerticalDatum": {
-            "type": "string",
+          "SupportedVerticalDatums": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
             "nullable": true
           },
-          "TargetVerticalDatum": {
-            "type": "string",
+          "SupportedConversionDirections": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
             "nullable": true
           },
           "DepthPositiveDirection": {
@@ -354,6 +411,83 @@
             "readOnly": true
           }
         }
+      },
+      "Wgs84ToMeanSeaLevelPosition": {
+        "type": "object",
+        "properties": {
+          "Latitude": {
+            "maximum": 1.5707963267948966,
+            "minimum": -1.5707963267948966,
+            "type": "number",
+            "description": "WGS84 geodetic latitude in SI radians, between -π/2 and π/2.",
+            "format": "double"
+          },
+          "Longitude": {
+            "maximum": 3.141592653589793,
+            "minimum": -3.141592653589793,
+            "type": "number",
+            "description": "WGS84 geodetic longitude in SI radians, between -π and π.",
+            "format": "double"
+          },
+          "Wgs84EllipsoidalDepth": {
+            "type": "number",
+            "description": "Depth in SI metres, positive downward from the WGS84 reference ellipsoid. A negative value is above it.",
+            "format": "double"
+          }
+        },
+        "description": "A WGS84 horizontal position and ellipsoidal depth expressed using OSDC SI conventions."
+      },
+      "Wgs84ToMeanSeaLevelRequest": {
+        "required": [
+          "Positions"
+        ],
+        "type": "object",
+        "properties": {
+          "Positions": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Wgs84ToMeanSeaLevelPosition"
+            },
+            "description": "Positions and WGS84 ellipsoidal depths to convert. Any invalid item rejects the entire request."
+          }
+        },
+        "description": "A stateless synchronous request to convert WGS84 ellipsoidal depths to mean-sea-level depths."
+      },
+      "Wgs84ToMeanSeaLevelResponse": {
+        "type": "object",
+        "properties": {
+          "Model": {
+            "$ref": "#/components/schemas/EarthVerticalDatumModelInfo"
+          },
+          "Samples": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Wgs84ToMeanSeaLevelSample"
+            },
+            "nullable": true
+          }
+        },
+        "description": "EGM84-30 inverse-conversion results in the same order as the request positions."
+      },
+      "Wgs84ToMeanSeaLevelSample": {
+        "type": "object",
+        "properties": {
+          "Position": {
+            "$ref": "#/components/schemas/Wgs84ToMeanSeaLevelPosition"
+          },
+          "MeanSeaLevelDepth": {
+            "type": "number",
+            "description": "Depth in SI metres, positive downward from the EGM84 mean-sea-level geoid.",
+            "format": "double"
+          },
+          "GeoidUndulation": {
+            "type": "number",
+            "description": "EGM84 geoid undulation in SI metres, positive upward from the WGS84 ellipsoid to the geoid.",
+            "format": "double"
+          }
+        },
+        "description": "An input WGS84 position and its corresponding EGM84 mean-sea-level depth."
       }
     }
   }

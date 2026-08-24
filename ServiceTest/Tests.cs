@@ -48,6 +48,23 @@ public class Tests
     }
 
     [Test]
+    public async Task GeneratedClientConvertsWgs84EllipsoidalDepth()
+    {
+        var request = PseudoConstructors.ConstructWgs84ToMeanSeaLevelRequest();
+        request.Positions.First().Latitude = 0.5;
+        request.Positions.First().Longitude = 1.0;
+        request.Positions.First().Wgs84EllipsoidalDepth = 1000;
+
+        Wgs84ToMeanSeaLevelResponse response = await generatedClient_.ConvertWgs84ToMeanSeaLevelAsync(request);
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.Samples, Has.Count.EqualTo(1));
+            Assert.That(response.Samples.First().MeanSeaLevelDepth, Is.Not.EqualTo(1000));
+            Assert.That(response.Model.ID, Is.EqualTo("EGM84-30"));
+        });
+    }
+
+    [Test]
     public void InvalidRequestReturnsUnprocessableEntityThroughGeneratedClient()
     {
         var request = PseudoConstructors.ConstructMeanSeaLevelToWgs84Request();
@@ -78,6 +95,7 @@ public class Tests
         Assert.That(names, Is.EqualTo(new[]
         {
             "earth_vertical_datum_convert_mean_sea_level_to_wgs84",
+            "earth_vertical_datum_convert_wgs84_to_mean_sea_level",
             "earth_vertical_datum_get_model_info",
             "ping"
         }));
@@ -102,7 +120,7 @@ public class Tests
         Assert.Multiple(() =>
         {
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-            Assert.That(tools.GetArrayLength(), Is.EqualTo(3));
+            Assert.That(tools.GetArrayLength(), Is.EqualTo(4));
             Assert.That(tools.EnumerateArray().All(tool => tool.TryGetProperty("inputSchema", out _)), Is.True);
             Assert.That(tools.EnumerateArray().All(tool => tool.TryGetProperty("outputSchema", out _)), Is.True);
             Assert.That(content, Does.Not.Contain("usage_statistics").IgnoreCase);
@@ -110,12 +128,19 @@ public class Tests
 
         JsonElement convert = tools.EnumerateArray().Single(tool =>
             tool.GetProperty("name").GetString() == "earth_vertical_datum_convert_mean_sea_level_to_wgs84");
+        JsonElement inverse = tools.EnumerateArray().Single(tool =>
+            tool.GetProperty("name").GetString() == "earth_vertical_datum_convert_wgs84_to_mean_sea_level");
         Assert.Multiple(() =>
         {
             Assert.That(convert.GetProperty("description").GetString(), Does.Contain("positive downward"));
             Assert.That(convert.GetProperty("description").GetString(), Does.Contain("no GUID"));
             Assert.That(convert.GetProperty("outputSchema").GetProperty("properties")
                 .TryGetProperty("Samples", out _), Is.True);
+            Assert.That(inverse.GetProperty("description").GetString(), Does.Contain("positive downward"));
+            Assert.That(inverse.GetProperty("description").GetString(), Does.Contain("MeanSeaLevelDepth = Wgs84EllipsoidalDepth + GeoidUndulation"));
+            Assert.That(inverse.GetProperty("inputSchema").GetProperty("properties")
+                .GetProperty("Positions").GetProperty("items").GetProperty("properties")
+                .TryGetProperty("Wgs84EllipsoidalDepth", out _), Is.True);
         });
     }
 
@@ -144,6 +169,35 @@ public class Tests
             Assert.That(result.TryGetProperty("isError", out JsonElement isError) && isError.GetBoolean(), Is.False);
             Assert.That(structured.GetProperty("Model").GetProperty("ID").GetString(), Is.EqualTo("EGM84-30"));
             Assert.That(structured.GetProperty("Samples")[0].GetProperty("Wgs84EllipsoidalDepth").GetDouble(),
+                Is.Not.EqualTo(1000.0));
+        });
+    }
+
+    [Test]
+    public async Task McpInverseConversionToolReturnsStructuredResult()
+    {
+        const string payload = """
+            {"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"earth_vertical_datum_convert_wgs84_to_mean_sea_level","arguments":{"Positions":[{"Latitude":0.5,"Longitude":1.0,"Wgs84EllipsoidalDepth":1000.0}]}}}
+            """;
+        using var request = new HttpRequestMessage(HttpMethod.Post, "/EarthVerticalDatum/api/mcp");
+        request.Headers.Accept.ParseAdd("application/json");
+        request.Headers.Accept.ParseAdd("text/event-stream");
+        request.Content = new StringContent(payload, Encoding.UTF8, "application/json");
+
+        HttpResponseMessage response = await httpClient_.SendAsync(request);
+        string content = await response.Content.ReadAsStringAsync();
+        string dataLine = content.Split('\n', StringSplitOptions.RemoveEmptyEntries)
+            .Single(line => line.StartsWith("data:", StringComparison.Ordinal));
+        using JsonDocument document = JsonDocument.Parse(dataLine["data:".Length..].Trim());
+        JsonElement result = document.RootElement.GetProperty("result");
+        JsonElement structured = result.GetProperty("structuredContent");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(result.TryGetProperty("isError", out JsonElement isError) && isError.GetBoolean(), Is.False);
+            Assert.That(structured.GetProperty("Model").GetProperty("ID").GetString(), Is.EqualTo("EGM84-30"));
+            Assert.That(structured.GetProperty("Samples")[0].GetProperty("MeanSeaLevelDepth").GetDouble(),
                 Is.Not.EqualTo(1000.0));
         });
     }

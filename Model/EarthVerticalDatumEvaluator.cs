@@ -75,6 +75,41 @@ public sealed class EarthVerticalDatumEvaluator : IDisposable
         return response;
     }
 
+    public Wgs84ToMeanSeaLevelResponse ConvertWgs84ToMeanSeaLevel(Wgs84ToMeanSeaLevelRequest? request,
+        int maximumPositions = 10_000, CancellationToken cancellationToken = default)
+    {
+        IReadOnlyList<EarthVerticalDatumValidationError> errors = Validate(request, maximumPositions);
+        if (errors.Count != 0) throw new EarthVerticalDatumValidationException(errors);
+
+        var response = new Wgs84ToMeanSeaLevelResponse { Model = ModelInfo };
+        foreach (Wgs84ToMeanSeaLevelPosition position in request!.Positions)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            double latitudeDegrees = position.Latitude * 180.0 / Math.PI;
+            double longitudeDegrees = position.Longitude * 180.0 / Math.PI;
+
+            // GeographicLib uses conventional heights positive upward. The public API uses
+            // depths positive downward, so signs change only at this library boundary.
+            double ellipsoidalHeight = -position.Wgs84EllipsoidalDepth;
+            double orthometricHeight = geoidModel_.ConvertHeight(
+                latitudeDegrees, longitudeDegrees, ellipsoidalHeight, ConvertFlag.EllipsoidToGeoid);
+            double meanSeaLevelDepth = -orthometricHeight;
+
+            response.Samples.Add(new Wgs84ToMeanSeaLevelSample
+            {
+                Position = new Wgs84ToMeanSeaLevelPosition
+                {
+                    Latitude = position.Latitude,
+                    Longitude = position.Longitude,
+                    Wgs84EllipsoidalDepth = position.Wgs84EllipsoidalDepth
+                },
+                MeanSeaLevelDepth = meanSeaLevelDepth,
+                GeoidUndulation = meanSeaLevelDepth - position.Wgs84EllipsoidalDepth
+            });
+        }
+        return response;
+    }
+
     public void Dispose() => geoidModel_.Dispose();
 
     private static IReadOnlyList<EarthVerticalDatumValidationError> Validate(
@@ -105,6 +140,38 @@ public sealed class EarthVerticalDatumEvaluator : IDisposable
             if (!double.IsFinite(position.MeanSeaLevelDepth))
                 errors.Add(new(index, "MeanSeaLevelDepth", "not_finite",
                     "MeanSeaLevelDepth must be a finite value in SI metres."));
+        }
+        return errors;
+    }
+
+    private static IReadOnlyList<EarthVerticalDatumValidationError> Validate(
+        Wgs84ToMeanSeaLevelRequest? request, int maximumPositions)
+    {
+        var errors = new List<EarthVerticalDatumValidationError>();
+        if (request?.Positions == null)
+        {
+            errors.Add(new(null, "Positions", "required", "Positions is required."));
+            return errors;
+        }
+        if (request.Positions.Count == 0)
+            errors.Add(new(null, "Positions", "empty", "At least one position is required."));
+        if (request.Positions.Count > maximumPositions)
+            errors.Add(new(null, "Positions", "too_many",
+                $"At most {maximumPositions.ToString(CultureInfo.InvariantCulture)} positions are allowed."));
+
+        for (int index = 0; index < request.Positions.Count; index++)
+        {
+            Wgs84ToMeanSeaLevelPosition? position = request.Positions[index];
+            if (position == null)
+            {
+                errors.Add(new(index, "Position", "required", "Position must not be null."));
+                continue;
+            }
+            ValidateAngle(errors, index, "Latitude", position.Latitude, -Math.PI / 2, Math.PI / 2);
+            ValidateAngle(errors, index, "Longitude", position.Longitude, -Math.PI, Math.PI);
+            if (!double.IsFinite(position.Wgs84EllipsoidalDepth))
+                errors.Add(new(index, "Wgs84EllipsoidalDepth", "not_finite",
+                    "Wgs84EllipsoidalDepth must be a finite value in SI metres."));
         }
         return errors;
     }

@@ -30,7 +30,7 @@ builder.Services.AddSwaggerGen(configuration =>
     {
         Title = "OSDC Earth Vertical Datum API",
         Version = "v1",
-        Description = "Stateless EGM84 mean-sea-level to WGS84 ellipsoidal-depth conversion using OSDC SI and positive-down conventions."
+        Description = "Stateless bidirectional conversion between EGM84 mean-sea-level and WGS84 ellipsoidal depths using OSDC SI and positive-down conventions."
     });
     configuration.CustomSchemaIds(type => type.FullName);
     foreach (string assemblyName in new[] { "Service", "Model" })
@@ -49,6 +49,7 @@ builder.Services.AddMcpServer(options =>
 builder.Services.AddEarthVerticalDatumMcpTool<PingMcpTool>();
 builder.Services.AddEarthVerticalDatumMcpTool<GetEarthVerticalDatumModelInfoMcpTool>();
 builder.Services.AddEarthVerticalDatumMcpTool<ConvertMeanSeaLevelToWgs84McpTool>();
+builder.Services.AddEarthVerticalDatumMcpTool<ConvertWgs84ToMeanSeaLevelMcpTool>();
 
 var app = builder.Build();
 _ = app.Services.GetRequiredService<EarthVerticalDatumEvaluator>().ModelInfo;
