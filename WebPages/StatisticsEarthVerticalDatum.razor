@@ -1,27 +1,136 @@
 @page "/StatisticsEarthVerticalDatum"
+@inject ILogger<StatisticsEarthVerticalDatum> logger
+@inject ISnackbar Snackbar
 @inject IEarthVerticalDatumAPIUtils Api
 
-<MudPaper Class="pa-6 mt-4" Elevation="2">
-    <MudText Typo="Typo.h4">Usage statistics</MudText>
-    <MudText Typo="Typo.body2" Class="mb-4">Counters are in-memory and scoped to the service replica selected by Kubernetes.</MudText>
-    @if (statistics == null)
+<MudStack Spacing="3">
+    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mt-4">
+        <div>
+            <MudText Typo="Typo.h5"><strong>Usage Statistics</strong></MudText>
+            <MudText Typo="Typo.body2" Color="Color.Secondary">
+                Earth Vertical Datum service requests recorded by operation for this process replica.
+            </MudText>
+        </div>
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   StartIcon="@Icons.Material.Filled.Refresh"
+                   Disabled="@isLoading_"
+                   OnClick="RefreshAsync">
+            Refresh
+        </MudButton>
+    </MudStack>
+
+    @if (isLoading_)
     {
         <MudProgressLinear Indeterminate="true" />
     }
+    else if (statistics_ == null)
+    {
+        <MudAlert Severity="Severity.Warning">Unable to load Earth Vertical Datum usage statistics.</MudAlert>
+    }
     else
     {
-        <MudSimpleTable>
-            <tbody>
-                <tr><th>REST conversions</th><td>@statistics.RestConversions</td></tr>
-                <tr><th>MCP conversions</th><td>@statistics.MCPConversions</td></tr>
-                <tr><th>Failed conversions</th><td>@statistics.FailedConversions</td></tr>
-                <tr><th>Positions converted</th><td>@statistics.PositionsConverted</td></tr>
-            </tbody>
-        </MudSimpleTable>
+        <MudGrid>
+            <MudItem xs="12" sm="6" md="3">
+                <MudText Typo="Typo.subtitle2">Total requests</MudText>
+                <MudText Typo="Typo.h6">@totalRequests_</MudText>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="3">
+                <MudText Typo="Typo.subtitle2">Positions converted</MudText>
+                <MudText Typo="Typo.h6">@statistics_.PositionsConverted</MudText>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="3">
+                <MudText Typo="Typo.subtitle2">Failed conversions</MudText>
+                <MudText Typo="Typo.h6">@statistics_.FailedConversions</MudText>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="3">
+                <MudText Typo="Typo.subtitle2">Replica started</MudText>
+                <MudText Typo="Typo.h6">@FormatDate(statistics_.StartedAt)</MudText>
+            </MudItem>
+        </MudGrid>
+
+        <MudTable Items="rows_" Dense="true" Hover="true" Bordered="true" Striped="true" SortLabel="Sort by">
+            <HeaderContent>
+                <MudTh><MudTableSortLabel SortBy="new Func<UsageRow, string>(row => row.Method)">Method</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<UsageRow, string>(row => row.Operation)">Endpoint / tool</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<UsageRow, object>(row => row.Total)">Total</MudTableSortLabel></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Method">
+                    <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined" Color="@MethodColor(context.Method)">
+                        @context.Method
+                    </MudChip>
+                </MudTd>
+                <MudTd DataLabel="Endpoint / tool">@context.Operation</MudTd>
+                <MudTd DataLabel="Total">@context.Total</MudTd>
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText>No usage counters were returned by the Earth Vertical Datum service.</MudText>
+            </NoRecordsContent>
+        </MudTable>
     }
-</MudPaper>
+</MudStack>
 
 @code {
-    private UsageStatisticsEarthVerticalDatum? statistics;
-    protected override async Task OnInitializedAsync() => statistics = await Api.ClientEarthVerticalDatum.GetEarthVerticalDatumUsageStatisticsAsync();
+    private UsageStatisticsEarthVerticalDatum? statistics_;
+    private readonly List<UsageRow> rows_ = [];
+    private long totalRequests_;
+    private bool isLoading_ = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshAsync();
+    }
+
+    private async Task RefreshAsync()
+    {
+        isLoading_ = true;
+        try
+        {
+            statistics_ = await Api.ClientEarthVerticalDatum.GetEarthVerticalDatumUsageStatisticsAsync();
+            BuildRows();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Problem loading Earth Vertical Datum usage statistics");
+            statistics_ = null;
+            rows_.Clear();
+            totalRequests_ = 0;
+            Snackbar.Add("Unable to load Earth Vertical Datum usage statistics.", Severity.Error);
+        }
+        finally
+        {
+            isLoading_ = false;
+        }
+    }
+
+    private void BuildRows()
+    {
+        rows_.Clear();
+        totalRequests_ = 0;
+
+        if (statistics_ == null)
+        {
+            return;
+        }
+
+        rows_.Add(new UsageRow("GET", "/EarthVerticalDatum and /EarthVerticalDatum/ModelInfo", statistics_.ModelInfoRequests));
+        rows_.Add(new UsageRow("POST", "/EarthVerticalDatum/Convert* (both directions)", statistics_.RestConversions));
+        rows_.Add(new UsageRow("MCP", "earth_vertical_datum_convert_* (both directions)", statistics_.MCPConversions));
+        rows_.Add(new UsageRow("GET", "/EarthVerticalDatumUsageStatistics", statistics_.StatisticsRequests));
+        totalRequests_ = rows_.Sum(row => row.Total);
+    }
+
+    private static Color MethodColor(string method) => method switch
+    {
+        "GET" => Color.Info,
+        "POST" => Color.Success,
+        "MCP" => Color.Secondary,
+        _ => Color.Default
+    };
+
+    private static string FormatDate(DateTimeOffset value) =>
+        value != default ? value.ToLocalTime().ToString("yyyy-MM-dd HH:mm") : "-";
+
+    private sealed record UsageRow(string Method, string Operation, long Total);
 }
