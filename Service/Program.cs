@@ -12,13 +12,20 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOptions<EarthVerticalDatumServiceOptions>()
     .Bind(builder.Configuration.GetSection(EarthVerticalDatumServiceOptions.SectionName))
     .Validate(value => value.MaximumPositionsPerRequest > 0, "MaximumPositionsPerRequest must be positive.")
+    .Validate(value => !string.IsNullOrWhiteSpace(value.UsageStatisticsFile), "UsageStatisticsFile is required.")
+    .Validate(value => value.UsageStatisticsSaveIntervalSeconds > 0, "UsageStatisticsSaveIntervalSeconds must be positive.")
     .ValidateOnStart();
 builder.Services.AddSingleton(provider =>
 {
     EarthVerticalDatumServiceOptions options = provider.GetRequiredService<IOptions<EarthVerticalDatumServiceOptions>>().Value;
     return new EarthVerticalDatumEvaluator(options.ModelDirectory);
 });
-builder.Services.AddSingleton<UsageStatisticsEarthVerticalDatum>();
+builder.Services.AddSingleton(provider => new UsageStatisticsStore(
+    provider.GetRequiredService<IOptions<EarthVerticalDatumServiceOptions>>().Value,
+    provider.GetRequiredService<IHostEnvironment>(),
+    provider.GetRequiredService<ILogger<UsageStatisticsStore>>()));
+builder.Services.AddSingleton(provider => provider.GetRequiredService<UsageStatisticsStore>().Statistics);
+builder.Services.AddHostedService(provider => provider.GetRequiredService<UsageStatisticsStore>());
 builder.Services.AddControllers().AddJsonOptions(options => JsonSettings.ApplyTo(options.JsonSerializerOptions));
 builder.Services.Configure<Microsoft.AspNetCore.Mvc.ApiBehaviorOptions>(options =>
     options.SuppressModelStateInvalidFilter = true);

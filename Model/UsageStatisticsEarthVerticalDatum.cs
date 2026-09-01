@@ -9,8 +9,25 @@ public sealed class UsageStatisticsEarthVerticalDatum
     private long modelInfoRequests_;
     private long statisticsRequests_;
 
-    public DateTimeOffset StartedAt { get; } = DateTimeOffset.UtcNow;
-    public string Scope => "process-replica";
+    public UsageStatisticsEarthVerticalDatum() : this(DateTimeOffset.UtcNow, 0, 0, 0, 0, 0, 0)
+    {
+    }
+
+    private UsageStatisticsEarthVerticalDatum(DateTimeOffset startedAt, long restConversions,
+        long mcpConversions, long failedConversions, long positionsConverted, long modelInfoRequests,
+        long statisticsRequests)
+    {
+        StartedAt = startedAt;
+        restConversions_ = restConversions;
+        mcpConversions_ = mcpConversions;
+        failedConversions_ = failedConversions;
+        positionsConverted_ = positionsConverted;
+        modelInfoRequests_ = modelInfoRequests;
+        statisticsRequests_ = statisticsRequests;
+    }
+
+    public DateTimeOffset StartedAt { get; }
+    public string Scope => "persistent-service";
     public long RestConversions => Interlocked.Read(ref restConversions_);
     public long MCPConversions => Interlocked.Read(ref mcpConversions_);
     public long FailedConversions => Interlocked.Read(ref failedConversions_);
@@ -28,4 +45,10 @@ public sealed class UsageStatisticsEarthVerticalDatum
     public void IncrementFailedConversion() => Interlocked.Increment(ref failedConversions_);
     public void IncrementModelInfo() => Interlocked.Increment(ref modelInfoRequests_);
     public void IncrementStatistics() => Interlocked.Increment(ref statisticsRequests_);
+
+    public static UsageStatisticsEarthVerticalDatum FromTotals(DateTimeOffset startedAt, long restConversions,
+        long mcpConversions, long failedConversions, long positionsConverted, long modelInfoRequests,
+        long statisticsRequests) =>
+        new(startedAt, restConversions, mcpConversions, failedConversions, positionsConverted,
+            modelInfoRequests, statisticsRequests);
 }

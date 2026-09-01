@@ -2,7 +2,7 @@
 
 OSDC Earth Vertical Datum is a stateless .NET 8 microservice that converts depths in both directions between the EGM84 mean-sea-level geoid and the WGS84 reference ellipsoid. It provides synchronous REST and MCP interfaces, a generated shared client, reusable unit-aware Blazor pages, a WebApp, Docker images, and Helm charts.
 
-The service intentionally has no database, stored datasets, calculation orders, or GUID-based retrieval workflow. A conversion request returns its result directly.
+The service intentionally has no database, stored calculation inputs or results, calculation orders, or GUID-based retrieval workflow. A conversion request returns its result directly. Aggregate usage counters are periodically written to a JSON snapshot and restored at startup.
 
 This repository replaces the previous implementation https://github.com/Open-Source-Drilling-Community/VerticalDatum. The repository https://github.com/Open-Source-Drilling-Community/VerticalDatum is set in archive mode.
 
@@ -43,7 +43,7 @@ The local service endpoints are:
 - MSL → WGS84 conversion: `POST http://localhost:58948/EarthVerticalDatum/api/EarthVerticalDatum/ConvertMeanSeaLevelToWgs84`
 - WGS84 → MSL conversion: `POST http://localhost:58948/EarthVerticalDatum/api/EarthVerticalDatum/ConvertWgs84ToMeanSeaLevel`
 - MCP Streamable HTTP: `http://localhost:58948/EarthVerticalDatum/api/mcp`
-- health: `http://localhost:58948/EarthVerticalDatum/api/health`
+- liveness/readiness: `http://localhost:58948/EarthVerticalDatum/api/health/live` and `http://localhost:58948/EarthVerticalDatum/api/health/ready`
 - Prometheus metrics: `http://localhost:58948/EarthVerticalDatum/api/metrics`
 - Swagger UI: `http://localhost:58948/EarthVerticalDatum/api/swagger`
 
@@ -55,7 +55,7 @@ Invoke-RestMethod -Method Post -ContentType application/json -Body $body `
   -Uri http://localhost:58948/EarthVerticalDatum/api/EarthVerticalDatum/ConvertMeanSeaLevelToWgs84
 ```
 
-Run the WebApp separately with `dotnet run --project WebApp/WebApp.csproj`; browse to `http://localhost:58950/EarthVerticalDatum/webapp/Home`. Its development configuration calls the local service on port `58948`.
+Run the WebApp separately with `dotnet run --project WebApp/WebApp.csproj`; browse to `http://localhost:58950/EarthVerticalDatum/webapp/Home`. Development configuration calls `https://dev.digiwells.no/` by default. To run the WebApp against the local service, set `EarthVerticalDatumHostURL=http://localhost:58948/` before starting it.
 
 ## MCP tools
 
@@ -88,12 +88,13 @@ The images are `digiwells/osdcdrillingearthverticaldatumservice` and `digiwells/
 
 ```powershell
 docker build -f Service/Dockerfile -t digiwells/osdcdrillingearthverticaldatumservice:local .
+docker run --rm -p 8080:8080 -v earthverticaldatum-home:/home digiwells/osdcdrillingearthverticaldatumservice:local
 docker build -f WebApp/Dockerfile -t digiwells/osdcdrillingearthverticaldatumwebappclient:local .
 helm upgrade --install osdcearthverticaldatumservice Service/charts/osdcdrillingearthverticaldatumservice
 helm upgrade --install osdcearthverticaldatumwebapp WebApp/charts/osdcdrillingearthverticaldatumwebappclient
 ```
 
-The charts pull from DigiWells Docker Hub, create no PodDisruptionBudget, and require no persistence volume. Override hosts, tags, pull secrets, resources, probes, and autoscaling as needed.
+The charts pull from DigiWells Docker Hub and create no PodDisruptionBudget. The service chart creates a 1 GiB `ReadWriteOnce` claim by default and mounts it at `/home`; set `persistence.existingClaim` to reuse a claim or `persistence.enabled=false` for restart-volatile statistics. The JSON snapshot has one writer, so keep the service at one replica while persistence is enabled. Override hosts, tags, pull secrets, resources, probes, and ingress as needed.
 
 ## Publishing WebPages
 

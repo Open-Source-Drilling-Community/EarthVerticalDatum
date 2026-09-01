@@ -3,7 +3,7 @@
 <MudText Class="mx-4 px-4 mt-4" Typo="Typo.h2">OSDC Earth Vertical Datum</MudText>
 <MudDivider Class="mb-4" />
 <MudText Class="mx-6 px-6" Typo="Typo.body1">
-    This stateless microservice converts depths in both directions between the EGM84 mean-sea-level geoid and the WGS84 reference ellipsoid.
+    This microservice performs stateless depth conversions in both directions between the EGM84 mean-sea-level geoid and the WGS84 reference ellipsoid.
     Public latitude and longitude values are WGS84 SI radians. Input and output depths are SI metres, positive downward,
     and are explicitly named for their reference surfaces. The web interface can display other units through the OSDC
     unit-reference system while preserving SI at the API boundary.
@@ -89,8 +89,9 @@
         conventions are confined to the implementation and never appear at the API boundary.
     </MudText>
     <MudText Typo="Typo.body1">
-        Every request is stateless and atomic: nothing is persisted, positions in a batch are validated and
-        converted together, and results preserve input order.
+        Every calculation request is stateless and atomic: inputs and results are not persisted, positions in a
+        batch are validated and converted together, and results preserve input order. Only aggregate usage counters
+        are retained for operational statistics.
     </MudText>
 </MudPaper>
 
@@ -108,7 +109,9 @@
         The <MudLink Href="/EarthVerticalDatum/webapp/EarthVerticalDatumModel">Geoid model</MudLink> page shows the
         loaded grid's identity, resolution, interpolation method, published accuracy, and coefficient checksum. The
         <MudLink Href="/EarthVerticalDatum/webapp/StatisticsEarthVerticalDatum">Usage statistics</MudLink> page shows
-        in-process request counters for this service replica.
+        cumulative REST and MCP request counters. The service periodically saves them to its configured JSON file,
+        which defaults to <code>/home/EarthVerticalDatum.UsageStatistics.json</code> in the container. They survive a
+        restart when that directory is backed by persistent storage.
     </MudText>
 </MudPaper>
 
@@ -152,9 +155,10 @@
             <tr>
                 <td><b>Reusable web pages</b></td>
                 <td>
-                    The Razor components behind the "Convert depth" and "Geoid model" pages are published as the
-                    <code>OSDC.Drilling.EarthVerticalDatum.WebPages</code> NuGet package, so other Blazor
-                    applications can embed the same unit-aware controls instead of re-implementing this UI.
+                    The Razor components behind the "Convert depth", "Geoid model", and "Usage statistics" pages
+                    are published as the <code>OSDC.Drilling.EarthVerticalDatum.WebPages</code> NuGet package, so
+                    other Blazor applications can embed the same unit-aware controls instead of re-implementing
+                    this UI.
                 </td>
             </tr>
         </tbody>
