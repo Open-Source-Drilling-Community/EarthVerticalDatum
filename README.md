@@ -4,6 +4,8 @@ OSDC Earth Vertical Datum is a stateless .NET 8 microservice that converts depth
 
 The service intentionally has no database, stored datasets, calculation orders, or GUID-based retrieval workflow. A conversion request returns its result directly.
 
+This repository replaces the previous implementation https://github.com/Open-Source-Drilling-Community/VerticalDatum. The repository https://github.com/Open-Source-Drilling-Community/VerticalDatum is set in archive mode.
+
 ## Solution structure
 
 - `Model`: public contracts, validation, usage counters, and the GeographicLib EGM84-30 evaluator.
