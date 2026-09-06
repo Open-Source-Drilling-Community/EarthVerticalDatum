@@ -1,5 +1,7 @@
 # OSDC.Drilling.EarthVerticalDatum.WebPages
 
+This release targets MudBlazor 9.9.0 and the matching OSDC shared web component packages.
+
 Reusable Blazor pages for the stateless OSDC Earth Vertical Datum service.
 
 - `/EarthVerticalDatumCalculation`: selectable unit-aware conversion in both directions between EGM84 mean-sea-level and WGS84 ellipsoidal depths.
