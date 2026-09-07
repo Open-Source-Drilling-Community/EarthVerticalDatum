@@ -26,7 +26,11 @@ public sealed class EarthVerticalDatumEvaluator : IDisposable
             Name = geoidModel_.GeoidName,
             ID = "EGM84-30",
             Description = geoidModel_.Description,
-            DataDateTime = geoidModel_.DateTime,
+            // GeographicLib reads this timestamp from the model header without a time-zone kind.
+            // The dataset timestamp is UTC; marking it explicitly keeps the wire value RFC 3339.
+            DataDateTime = geoidModel_.DateTime is { } dataDateTime
+                ? DateTime.SpecifyKind(dataDateTime, DateTimeKind.Utc)
+                : null,
             GridResolutionMinutes = 30,
             Interpolation = geoidModel_.Interpolation,
             MaximumInterpolationError = geoidModel_.MaxError,

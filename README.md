@@ -66,7 +66,7 @@ The MCP server publishes exactly four underscore-named tools:
 - `earth_vertical_datum_convert_mean_sea_level_to_wgs84`: synchronous stateless batch conversion.
 - `earth_vertical_datum_convert_wgs84_to_mean_sea_level`: synchronous stateless inverse batch conversion.
 
-`tools/list` supplies detailed descriptions plus strict input and output JSON Schemas. Usage statistics are deliberately excluded from MCP.
+`tools/list` supplies detailed descriptions plus strict input and output JSON Schemas. Successful calls include both structured content and equivalent serialized JSON text for compatibility with clients using MCP protocol revisions before structured tool output. Model timestamps use RFC 3339 UTC values. Usage statistics are deliberately excluded from MCP.
 
 ## Generation, build, and tests
 

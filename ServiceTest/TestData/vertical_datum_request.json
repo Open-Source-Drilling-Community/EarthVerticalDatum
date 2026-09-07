@@ -1,0 +1,279 @@
+{
+ "Positions": [
+  {
+   "Latitude": 0.9815273960210787,
+   "Longitude": 0.06022306890002414,
+   "MeanSeaLevelDepth": -27.1
+  },
+  {
+   "Latitude": 0.980453700768523,
+   "Longitude": 0.06036453534073229,
+   "MeanSeaLevelDepth": -46.7
+  },
+  {
+   "Latitude": 0.9809202170117924,
+   "Longitude": 0.05915394288247721,
+   "MeanSeaLevelDepth": -22.0
+  },
+  {
+   "Latitude": 0.9803340408997159,
+   "Longitude": 0.05995834641111258,
+   "MeanSeaLevelDepth": -55.0
+  },
+  {
+   "Latitude": 0.9805297137432047,
+   "Longitude": 0.05973270794613682,
+   "MeanSeaLevelDepth": -36.66
+  },
+  {
+   "Latitude": 0.9805420336188159,
+   "Longitude": 0.06043994664795775,
+   "MeanSeaLevelDepth": -36.0
+  },
+  {
+   "Latitude": 0.9816892746296806,
+   "Longitude": 0.05911702109077034,
+   "MeanSeaLevelDepth": -34.0
+  },
+  {
+   "Latitude": 0.9802703312583337,
+   "Longitude": 0.05992917016725384,
+   "MeanSeaLevelDepth": -25.0
+  },
+  {
+   "Latitude": 0.9804536039624567,
+   "Longitude": 0.0603669602908086,
+   "MeanSeaLevelDepth": -26.0
+  },
+  {
+   "Latitude": 0.9814746506029108,
+   "Longitude": 0.06328616072815667,
+   "MeanSeaLevelDepth": -23.0
+  },
+  {
+   "Latitude": 0.9797413588228157,
+   "Longitude": 0.05837881605734537,
+   "MeanSeaLevelDepth": -23.0
+  },
+  {
+   "Latitude": 0.9799381828196991,
+   "Longitude": 0.06026332303671473,
+   "MeanSeaLevelDepth": -43.5
+  },
+  {
+   "Latitude": 0.9805126064766636,
+   "Longitude": 0.060462840932078966,
+   "MeanSeaLevelDepth": -56.52
+  },
+  {
+   "Latitude": 0.9831389480243615,
+   "Longitude": 0.05771197595250639,
+   "MeanSeaLevelDepth": -27.1
+  },
+  {
+   "Latitude": 0.9827686527558792,
+   "Longitude": 0.057975886138745866,
+   "MeanSeaLevelDepth": -22.3
+  },
+  {
+   "Latitude": 0.9825466157955273,
+   "Longitude": 0.06018738269225956,
+   "MeanSeaLevelDepth": -16.76
+  },
+  {
+   "Latitude": 0.9819944825352164,
+   "Longitude": 0.05960130223970671,
+   "MeanSeaLevelDepth": -32.6
+  },
+  {
+   "Latitude": 0.9822998180798227,
+   "Longitude": 0.05881005056572957,
+   "MeanSeaLevelDepth": -25.0
+  },
+  {
+   "Latitude": 0.9842997049400799,
+   "Longitude": 0.05997187223517945,
+   "MeanSeaLevelDepth": -25.0
+  },
+  {
+   "Latitude": 0.9841681200962904,
+   "Longitude": 0.05930434401972891,
+   "MeanSeaLevelDepth": -25.0
+  },
+  {
+   "Latitude": 0.9819731736644663,
+   "Longitude": 0.05855550324283603,
+   "MeanSeaLevelDepth": -22.0
+  },
+  {
+   "Latitude": 0.9846699077857478,
+   "Longitude": 0.060765487001919104,
+   "MeanSeaLevelDepth": -25.0
+  },
+  {
+   "Latitude": 0.9822244013498127,
+   "Longitude": 0.05923671905494045,
+   "MeanSeaLevelDepth": -43.5
+  },
+  {
+   "Latitude": 0.9853295351217385,
+   "Longitude": 0.06283188894407547,
+   "MeanSeaLevelDepth": -41.3
+  },
+  {
+   "Latitude": 0.9839538912880378,
+   "Longitude": 0.05885592125842834,
+   "MeanSeaLevelDepth": -42.55
+  },
+  {
+   "Latitude": 0.9842058461731544,
+   "Longitude": 0.05963598885059809,
+   "MeanSeaLevelDepth": -53.15
+  },
+  {
+   "Latitude": 0.9860648123254588,
+   "Longitude": 0.0606426595657179,
+   "MeanSeaLevelDepth": -26.2
+  },
+  {
+   "Latitude": 0.9827589721774087,
+   "Longitude": 0.060160223631109025,
+   "MeanSeaLevelDepth": -34.14
+  },
+  {
+   "Latitude": 0.9825785872357198,
+   "Longitude": 0.05833708989577592,
+   "MeanSeaLevelDepth": -33.8
+  },
+  {
+   "Latitude": 0.9860931562659611,
+   "Longitude": 0.060284185592371246,
+   "MeanSeaLevelDepth": -34.1
+  },
+  {
+   "Latitude": 0.9819440059675124,
+   "Longitude": 0.05922313910733231,
+   "MeanSeaLevelDepth": -26.5
+  },
+  {
+   "Latitude": 0.9851773489486939,
+   "Longitude": 0.06305210235179924,
+   "MeanSeaLevelDepth": -33.22
+  },
+  {
+   "Latitude": 0.9822683600684228,
+   "Longitude": 0.059377783835567785,
+   "MeanSeaLevelDepth": -25.0
+  },
+  {
+   "Latitude": 0.9825567822338621,
+   "Longitude": 0.05904467082130882,
+   "MeanSeaLevelDepth": -32.6
+  },
+  {
+   "Latitude": 0.9817655066187203,
+   "Longitude": 0.05843543230275322,
+   "MeanSeaLevelDepth": -24.0
+  },
+  {
+   "Latitude": 0.9821783159893226,
+   "Longitude": 0.059302105048982846,
+   "MeanSeaLevelDepth": -30.0
+  },
+  {
+   "Latitude": 0.9821617550538264,
+   "Longitude": 0.059334812885357,
+   "MeanSeaLevelDepth": -30.0
+  },
+  {
+   "Latitude": 0.9823179266803369,
+   "Longitude": 0.05937523645402289,
+   "MeanSeaLevelDepth": 68.9
+  },
+  {
+   "Latitude": 0.9822076441175227,
+   "Longitude": 0.05914351894162044,
+   "MeanSeaLevelDepth": 69.0
+  },
+  {
+   "Latitude": 0.9830287670948883,
+   "Longitude": 0.058490360401724444,
+   "MeanSeaLevelDepth": 70.0
+  },
+  {
+   "Latitude": 0.9822135471907111,
+   "Longitude": 0.05926026992689786,
+   "MeanSeaLevelDepth": 69.3
+  },
+  {
+   "Latitude": 0.9813523170364868,
+   "Longitude": 0.059968106831812494,
+   "MeanSeaLevelDepth": 70.0
+  },
+  {
+   "Latitude": 0.9822406673670458,
+   "Longitude": 0.05921347651668907,
+   "MeanSeaLevelDepth": 69.2
+  },
+  {
+   "Latitude": 0.982227423256695,
+   "Longitude": 0.059236172269534225,
+   "MeanSeaLevelDepth": 69.2
+  },
+  {
+   "Latitude": 0.9821770358199186,
+   "Longitude": 0.05925228370307905,
+   "MeanSeaLevelDepth": 70.0
+  },
+  {
+   "Latitude": 0.9807648775496621,
+   "Longitude": 0.060488064902553845,
+   "MeanSeaLevelDepth": -0.0
+  },
+  {
+   "Latitude": 0.9805088119144492,
+   "Longitude": 0.059745161109214275,
+   "MeanSeaLevelDepth": 66.2
+  },
+  {
+   "Latitude": 0.9821764360315453,
+   "Longitude": 0.05930399647751019,
+   "MeanSeaLevelDepth": -62.4
+  },
+  {
+   "Latitude": 0.9821764360315453,
+   "Longitude": 0.05930399647751019,
+   "MeanSeaLevelDepth": 76.2
+  },
+  {
+   "Latitude": 0.982227536113332,
+   "Longitude": 0.05923466512142131,
+   "MeanSeaLevelDepth": 0
+  },
+  {
+   "Latitude": 0.9821997068121208,
+   "Longitude": 0.059252942416575353,
+   "MeanSeaLevelDepth": 0
+  },
+  {
+   "Latitude": 0.9821987853577293,
+   "Longitude": 0.05925226492836084,
+   "MeanSeaLevelDepth": 0
+  },
+  {
+   "Latitude": 0.9830338467506365,
+   "Longitude": 0.058489545974482,
+   "MeanSeaLevelDepth": 0
+  },
+  {
+   "Latitude": 0.9813469481003235,
+   "Longitude": 0.05996887606097628,
+   "MeanSeaLevelDepth": 0
+  },
+  {
+   "Latitude": 0.9817589349441848,
+   "Longitude": 0.0584269166770399,
+   "MeanSeaLevelDepth": 0
+  }
+ ]
+}

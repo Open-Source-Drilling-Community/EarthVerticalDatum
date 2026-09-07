@@ -19,6 +19,9 @@
     <ProjectReference Include="..\ModelSharedOut\ModelSharedOut.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="TestData\vertical_datum_request.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\VerticalDatumModelFiles\**\*">
       <Link>VerticalDatumModelFiles\%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

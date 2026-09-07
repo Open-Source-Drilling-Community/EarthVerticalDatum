@@ -47,11 +47,16 @@ internal sealed class McpServerToolAdapter : McpServerTool
         try
         {
             JsonNode? result = await tool_.InvokeAsync(arguments, cancellationToken).ConfigureAwait(false);
+            if (result is null)
+                return new CallToolResult();
+
+            string serializedResult = result.ToJsonString(JsonOptions);
             return new CallToolResult
             {
-                StructuredContent = result is null
-                    ? null
-                    : JsonSerializer.SerializeToElement(result, JsonOptions)
+                StructuredContent = JsonSerializer.Deserialize<JsonElement>(serializedResult, JsonOptions),
+                // MCP clients that negotiate a protocol version before structured tool output
+                // was introduced still consume the JSON result from a text content block.
+                Content = { new TextContentBlock { Text = serializedResult } }
             };
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)

@@ -1,6 +1,7 @@
 using System.Net;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
@@ -203,12 +204,13 @@ public class Tests
     }
 
     [Test]
-    public async Task McpConversionToolReturnsStructuredResult()
+    public async Task McpConversionToolReturnsStructuredAndBackwardCompatibleTextResult()
     {
         const string payload = """
             {"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"earth_vertical_datum_convert_mean_sea_level_to_wgs84","arguments":{"Positions":[{"Latitude":0.5,"Longitude":1.0,"MeanSeaLevelDepth":1000.0}]}}}
             """;
         using var request = new HttpRequestMessage(HttpMethod.Post, "/EarthVerticalDatum/api/mcp");
+        request.Headers.TryAddWithoutValidation("MCP-Protocol-Version", "2025-03-26");
         request.Headers.Accept.ParseAdd("application/json");
         request.Headers.Accept.ParseAdd("text/event-stream");
         request.Content = new StringContent(payload, Encoding.UTF8, "application/json");
@@ -220,6 +222,9 @@ public class Tests
         using JsonDocument document = JsonDocument.Parse(dataLine["data:".Length..].Trim());
         JsonElement result = document.RootElement.GetProperty("result");
         JsonElement structured = result.GetProperty("structuredContent");
+        JsonElement textContent = result.GetProperty("content")[0];
+        using JsonDocument textDocument = JsonDocument.Parse(textContent.GetProperty("text").GetString()!);
+        string dataDateTime = structured.GetProperty("Model").GetProperty("DataDateTime").GetString()!;
 
         Assert.Multiple(() =>
         {
@@ -228,6 +233,51 @@ public class Tests
             Assert.That(structured.GetProperty("Model").GetProperty("ID").GetString(), Is.EqualTo("EGM84-30"));
             Assert.That(structured.GetProperty("Samples")[0].GetProperty("Wgs84EllipsoidalDepth").GetDouble(),
                 Is.Not.EqualTo(1000.0));
+            Assert.That(textContent.GetProperty("type").GetString(), Is.EqualTo("text"));
+            Assert.That(JsonElement.DeepEquals(textDocument.RootElement, structured), Is.True);
+            Assert.That(dataDateTime, Does.EndWith("Z"));
+            Assert.That(DateTimeOffset.TryParse(dataDateTime, out _), Is.True);
+        });
+    }
+
+    [Test]
+    public async Task McpConversionToolAcceptsReportedMultiPositionPayload()
+    {
+        JsonNode arguments = JsonNode.Parse(await File.ReadAllTextAsync(
+            Path.Combine(AppContext.BaseDirectory, "TestData", "vertical_datum_request.json")))!;
+        string payload = new JsonObject
+        {
+            ["jsonrpc"] = "2.0",
+            ["id"] = 4,
+            ["method"] = "tools/call",
+            ["params"] = new JsonObject
+            {
+                ["name"] = "earth_vertical_datum_convert_mean_sea_level_to_wgs84",
+                ["arguments"] = arguments
+            }
+        }.ToJsonString();
+        using var request = new HttpRequestMessage(HttpMethod.Post, "/EarthVerticalDatum/api/mcp");
+        request.Headers.TryAddWithoutValidation("MCP-Protocol-Version", "2025-03-26");
+        request.Headers.Accept.ParseAdd("application/json");
+        request.Headers.Accept.ParseAdd("text/event-stream");
+        request.Content = new StringContent(payload, Encoding.UTF8, "application/json");
+
+        HttpResponseMessage response = await httpClient_.SendAsync(request);
+        string content = await response.Content.ReadAsStringAsync();
+        string dataLine = content.Split('\n', StringSplitOptions.RemoveEmptyEntries)
+            .Single(line => line.StartsWith("data:", StringComparison.Ordinal));
+        using JsonDocument document = JsonDocument.Parse(dataLine["data:".Length..].Trim());
+        JsonElement result = document.RootElement.GetProperty("result");
+        JsonElement structured = result.GetProperty("structuredContent");
+        JsonElement textContent = result.GetProperty("content")[0];
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(result.TryGetProperty("isError", out JsonElement isError) && isError.GetBoolean(), Is.False);
+            Assert.That(structured.GetProperty("Samples").GetArrayLength(), Is.EqualTo(55));
+            Assert.That(textContent.GetProperty("type").GetString(), Is.EqualTo("text"));
+            Assert.That(textContent.GetProperty("text").GetString(), Does.Contain("Wgs84EllipsoidalDepth"));
         });
     }
 
