@@ -7,3 +7,5 @@ Run with `dotnet test ModelTest/ModelTest.csproj`.
 Author: Eric Cayeux
 
 Company: NORCE Research
+
+Model tests verify AngularGridSpacing equals pi/360 radians alongside the existing conversion, provenance, validation and concurrency checks.

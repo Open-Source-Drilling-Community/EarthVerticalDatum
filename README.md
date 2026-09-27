@@ -105,3 +105,5 @@ Project code is MIT licensed. EGM84 grid and GeographicLib attribution is in [TH
 Author: Eric Cayeux
 
 Company: NORCE Research
+
+The Model uses the published SemanticCatalogue 0.4.0 NuGet package. Curated model attributes publish matching `x-osdc-semantic` annotations in REST/OpenAPI and MCP. `AngularGridSpacing` replaces `GridResolutionMinutes` entirely: its value is pi/360 radians (30 arcminutes); there is no compatibility alias. Clients must regenerate and consume radians. See [semantic bindings](SEMANTICS.md).

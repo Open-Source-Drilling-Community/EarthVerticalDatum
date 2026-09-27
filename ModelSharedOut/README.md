@@ -7,3 +7,5 @@ After changing a public REST contract, build `Service`, run `dotnet swagger tofi
 Author: Eric Cayeux
 
 Company: NORCE Research
+
+Regenerated contracts carry SemanticCatalogue 0.4.0 annotations and expose only AngularGridSpacing in radians. Regenerate downstream clients for this intentional breaking field/unit change. The generated DTOs require no direct SemanticCatalogue reference.

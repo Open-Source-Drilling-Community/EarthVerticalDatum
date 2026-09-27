@@ -23,3 +23,5 @@ Run `dotnet run --project Service/Service.csproj`. The image is `digiwells/osdcd
 Author: Eric Cayeux
 
 Company: NORCE Research
+
+REST and MCP expose the same SemanticCatalogue 0.4.0 bindings through `x-osdc-semantic`. The OpenAPI filter reads Model attributes; both conversion tools reuse the model-info schema. AngularGridSpacing replaces GridResolutionMinutes, with pi/360 radians for EGM84-30. The schema endpoint preserves the API PathBase in its server URL.

@@ -40,6 +40,7 @@ builder.Services.AddSwaggerGen(configuration =>
         Description = "Stateless bidirectional conversion between EGM84 mean-sea-level and WGS84 ellipsoidal depths using OSDC SI and positive-down conventions."
     });
     configuration.CustomSchemaIds(type => type.FullName);
+    configuration.SchemaFilter<SemanticSchemaFilter>();
     foreach (string assemblyName in new[] { "Service", "Model" })
     {
         string xmlPath = Path.Combine(AppContext.BaseDirectory, assemblyName + ".xml");

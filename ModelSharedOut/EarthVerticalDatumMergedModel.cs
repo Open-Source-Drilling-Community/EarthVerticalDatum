@@ -615,48 +615,93 @@ namespace OSDC.Drilling.EarthVerticalDatum.ModelShared
     public partial class EarthVerticalDatumModelInfo
     {
 
+        /// <summary>
+        /// GeographicLib geoid-grid name.
+        /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("Name")]
         public string Name { get; set; }
 
+        /// <summary>
+        /// Identifier of the installed model and grid realization.
+        /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("ID")]
         public string ID { get; set; }
 
+        /// <summary>
+        /// Description embedded in the grid file.
+        /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("Description")]
         public string Description { get; set; }
 
+        /// <summary>
+        /// Dataset timestamp from the grid header, marked UTC; not the conversion time or necessarily a publication date.
+        /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("DataDateTime")]
         public System.DateTimeOffset? DataDateTime { get; set; }
 
-        [System.Text.Json.Serialization.JsonPropertyName("GridResolutionMinutes")]
-        public double GridResolutionMinutes { get; set; }
+        /// <summary>
+        /// Angular spacing between grid nodes in SI radians along latitude and longitude; pi/360 for this grid (30 arcminutes).
+        /// </summary>
+        [System.Text.Json.Serialization.JsonPropertyName("AngularGridSpacing")]
+        public double AngularGridSpacing { get; set; }
 
+        /// <summary>
+        /// Interpolation method used to evaluate the sampled geoid.
+        /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("Interpolation")]
         public string Interpolation { get; set; }
 
+        /// <summary>
+        /// Estimated maximum absolute representation error in SI metres relative to the reference geoid, including quantization and interpolation; not total geoid-model accuracy.
+        /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("MaximumInterpolationError")]
         public double MaximumInterpolationError { get; set; }
 
+        /// <summary>
+        /// Estimated root mean square representation error in SI metres relative to the reference geoid, including quantization and interpolation; not a standard deviation or total geoid-model accuracy.
+        /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("RMSInterpolationError")]
         public double RMSInterpolationError { get; set; }
 
+        /// <summary>
+        /// Version of the calculation implementation.
+        /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("GeographicLibVersion")]
         public string GeographicLibVersion { get; set; }
 
+        /// <summary>
+        /// Ellipsoid used for geodetic coordinates and ellipsoidal depth.
+        /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("ReferenceEllipsoid")]
         public string ReferenceEllipsoid { get; set; }
 
+        /// <summary>
+        /// Supported vertical reference surfaces; EGM84 is a model geoid, not a local tidal datum or instantaneous sea surface.
+        /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("SupportedVerticalDatums")]
         public System.Collections.Generic.ICollection<string> SupportedVerticalDatums { get; set; }
 
+        /// <summary>
+        /// Supported source-to-target reference-surface pairs.
+        /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("SupportedConversionDirections")]
         public System.Collections.Generic.ICollection<string> SupportedConversionDirections { get; set; }
 
+        /// <summary>
+        /// Public depth coordinates increase downward from their named reference surfaces.
+        /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("DepthPositiveDirection")]
         public string DepthPositiveDirection { get; set; }
 
+        /// <summary>
+        /// Whether the loaded model supports concurrent evaluations.
+        /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("IsThreadSafe")]
         public bool IsThreadSafe { get; set; }
 
+        /// <summary>
+        /// SHA-256 digest of the complete PGM grid file bytes, encoded as 64 lowercase hexadecimal characters.
+        /// </summary>
         [System.Text.Json.Serialization.JsonPropertyName("CoefficientSHA256")]
         public string CoefficientSHA256 { get; set; }
 

@@ -9,3 +9,5 @@ Run `dotnet run --project WebApp/WebApp.csproj`, then browse to `http://localhos
 Author: Eric Cayeux
 
 Company: NORCE Research
+
+Rebuild the host with the regenerated WebPages/client contract: AngularGridSpacing replaces GridResolutionMinutes and carries radians. The calculator and model page use shared unit selection for grid spacing, geoid undulation and representation errors.

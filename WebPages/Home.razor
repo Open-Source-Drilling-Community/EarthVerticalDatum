@@ -38,10 +38,13 @@
             </MudText>
             <MudText Typo="Typo.body1">
                 The loaded grid is interpolated cubically to give a smooth undulation value at any latitude and
-                longitude, together with its published maximum and RMS interpolation error. Exact model identity,
-                accuracy figures, and a SHA-256 of the coefficient file are available on the
+                longitude. Published maximum and RMS representation errors cover quantization and interpolation
+                relative to EGM84; they do not express total geoid-model accuracy. Exact model identity,
+                representation errors, and a SHA-256 of the coefficient file are available on the
                 <MudLink Href="/EarthVerticalDatum/webapp/EarthVerticalDatumModel">Geoid model</MudLink> page and via
-                the model-information API and MCP tool.
+                the model-information API and MCP tool. Angular grid spacing is reported in SI radians and
+                displayed in the selected unit system. Geoid undulation uses 1 mm meaningful display precision;
+                this is a display convention, not an accuracy claim.
             </MudText>
         </MudPaper>
     </MudItem>

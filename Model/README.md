@@ -11,3 +11,5 @@ Validation rejects the entire batch for missing/empty/oversized input, non-finit
 Author: Eric Cayeux
 
 Company: NORCE Research
+
+Model-owned `Semantic` attributes bind the curated SemanticCatalogue 0.4.0 vocabulary to both conversion directions and model provenance. AngularGridSpacing is in SI radians; geoid undulation uses LengthStandard (1 mm meaningful display precision), depths use DepthDrilling, and representation errors use Length. Precision is not model accuracy and does not round API values.
