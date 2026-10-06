@@ -46,15 +46,22 @@ public class SemanticContractTests
                 (typeof(EarthVerticalDatumModelInfo), inverse.OutputSchema["$defs"]!["modelInfo"]!),
                 (typeof(EarthVerticalDatumModelInfo), tools["earth_vertical_datum_get_model_info"].OutputSchema) })
             {
-                foreach (var schema in new[] { live[type.FullName!]!, merged[type.Name]!, mcp })
+                foreach (var (source, schema) in new[]
                 {
-                    Assert.That(JsonNode.DeepEquals(schema[SemanticMetadata.ExtensionName], SemanticMetadata.For(type)), Is.True, type.Name);
-                    Assert.That(schema[SemanticMetadata.ExtensionName]!["catalogueVersion"]!.GetValue<string>(), Is.EqualTo("0.4.0"));
+                    ("live REST", live[type.FullName!]!),
+                    ("merged REST", merged[type.Name]!),
+                    ("MCP", mcp)
+                })
+                {
+                    Assert.That(JsonNode.DeepEquals(schema[SemanticMetadata.ExtensionName], SemanticMetadata.For(type)), Is.True,
+                        $"{source}: {type.Name}; actual={schema[SemanticMetadata.ExtensionName]?.ToJsonString()}; expected={SemanticMetadata.For(type)?.ToJsonString()}");
+                    Assert.That(schema[SemanticMetadata.ExtensionName]!["catalogueVersion"]!.GetValue<string>(), Is.EqualTo("0.15.0"));
                     Assert.That(schema[SemanticMetadata.ExtensionName]!["curationStatus"]!.GetValue<string>(), Is.EqualTo("Reviewed"));
                     foreach (var property in type.GetProperties())
                     {
                         var actual = schema["properties"]![property.Name]!;
-                        Assert.That(JsonNode.DeepEquals(actual[SemanticMetadata.ExtensionName], SemanticMetadata.For(property)), Is.True, type.Name + "." + property.Name);
+                        Assert.That(JsonNode.DeepEquals(actual[SemanticMetadata.ExtensionName], SemanticMetadata.For(property)), Is.True,
+                            $"{source}: {type.Name}.{property.Name}; actual={actual[SemanticMetadata.ExtensionName]?.ToJsonString()}; expected={SemanticMetadata.For(property)?.ToJsonString()}");
                         if (property.PropertyType == typeof(double))
                             Assert.That(actual[SemanticMetadata.ExtensionName]?["physicalQuantity"], Is.Not.Null, property.Name);
                     }
