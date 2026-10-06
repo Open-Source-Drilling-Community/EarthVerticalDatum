@@ -31,7 +31,7 @@ public sealed class EarthVerticalDatumEvaluator : IDisposable
             DataDateTime = geoidModel_.DateTime is { } dataDateTime
                 ? DateTime.SpecifyKind(dataDateTime, DateTimeKind.Utc)
                 : null,
-            AngularGridSpacing = 30.0 * Math.PI / (180.0 * 60.0),
+            AngularGridSpacing = Math.PI / 360.0,
             Interpolation = geoidModel_.Interpolation,
             MaximumInterpolationError = geoidModel_.MaxError,
             RMSInterpolationError = geoidModel_.RMSError,

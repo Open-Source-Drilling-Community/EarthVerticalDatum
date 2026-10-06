@@ -1,4 +1,5 @@
 using OSDC.DotnetLibraries.Drilling.SemanticCatalogue;
+
 namespace OSDC.Drilling.EarthVerticalDatum.Model;
 
 /// <summary>An input position and its corresponding WGS84 ellipsoidal-depth conversion.</summary>

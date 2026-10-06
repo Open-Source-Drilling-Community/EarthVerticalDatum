@@ -83,7 +83,7 @@ public class Tests
         Assert.Multiple(() =>
         {
             Assert.That(evaluator_.ModelInfo.ID, Is.EqualTo("EGM84-30"));
-            Assert.That(evaluator_.ModelInfo.AngularGridSpacing, Is.EqualTo(Math.PI / 360.0).Within(1e-15));
+            Assert.That(evaluator_.ModelInfo.AngularGridSpacing, Is.EqualTo(Math.PI / 360.0));
             Assert.That(evaluator_.ModelInfo.Interpolation, Does.Contain("cubic").IgnoreCase);
             Assert.That(evaluator_.ModelInfo.ReferenceEllipsoid, Is.EqualTo("WGS84"));
             Assert.That(evaluator_.ModelInfo.DepthPositiveDirection, Is.EqualTo("down"));

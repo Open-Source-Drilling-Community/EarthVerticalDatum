@@ -2,6 +2,8 @@
 
 `Model` contains the public vertical-datum contracts, atomic request validation, thread-safe cumulative usage counters, and the stateless `EarthVerticalDatumEvaluator`. The service can restore counter totals and their original start time from its private JSON snapshot.
 
+Public conversion types use reviewed SemanticCatalogue 0.15.0 attributes for coordinates, depth references, samples, and model provenance.
+
 The evaluator loads GeographicLib `egm84-30` once with cubic interpolation and thread-safe mode. It converts in both directions between EGM84 mean-sea-level depth and WGS84 ellipsoidal depth. Public coordinates use radians and both depths use metres positive downward. GeographicLib degree and positive-up conversions are confined to the implementation boundary.
 
 `EarthVerticalDatumModelInfo` exposes model identity, grid resolution, interpolation, published maximum/RMS errors, the model data timestamp marked as UTC for RFC 3339 serialization, GeographicLib version, reference surfaces, depth direction, thread-safety, and grid SHA-256.

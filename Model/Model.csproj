@@ -10,8 +10,8 @@
     <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="OSDC.DotnetLibraries.Drilling.SemanticCatalogue" Version="0.4.0" />
     <PackageReference Include="GeographicLib.NET" Version="2.3.2" />
+    <PackageReference Include="OSDC.DotnetLibraries.Drilling.SemanticCatalogue" Version="0.15.0" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\VerticalDatumModelFiles\**\*">

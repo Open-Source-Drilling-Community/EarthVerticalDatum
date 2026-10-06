@@ -1,4 +1,3 @@
-using OSDC.DotnetLibraries.Drilling.SemanticCatalogue;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.Options;
@@ -23,19 +22,13 @@ public sealed class ConvertWgs84ToMeanSeaLevelMcpTool : IMcpTool
         evaluator_ = evaluator;
         statistics_ = statistics;
         maximumPositions_ = options.Value.MaximumPositionsPerRequest;
-        InputSchema = CreateInputSchema(maximumPositions_);
-        SemanticMetadata.AnnotateObject((JsonObject)InputSchema, typeof(Wgs84ToMeanSeaLevelRequest));
-        SemanticMetadata.AnnotateObject((JsonObject)InputSchema["properties"]!["Positions"]!["items"]!, typeof(Wgs84ToMeanSeaLevelPosition));
-        SemanticMetadata.AnnotateObject((JsonObject)OutputSchema, typeof(Wgs84ToMeanSeaLevelResponse));
-        SemanticMetadata.AnnotateObject((JsonObject)OutputSchema["properties"]!["Samples"]!["items"]!, typeof(Wgs84ToMeanSeaLevelSample));
-        SemanticMetadata.AnnotateObject((JsonObject)OutputSchema["$defs"]!["position"]!, typeof(Wgs84ToMeanSeaLevelPosition));
-        OutputSchema["$defs"]!["modelInfo"] = GetEarthVerticalDatumModelInfoMcpTool.CreateOutputSchema();
+        InputSchema = McpSemanticSchemas.Annotate(CreateInputSchema(maximumPositions_), typeof(Wgs84ToMeanSeaLevelRequest));
     }
 
     public string Name => "earth_vertical_datum_convert_wgs84_to_mean_sea_level";
-    public string Description => "Synchronously converts one or more depths from the WGS84 reference ellipsoid to the EGM84 mean-sea-level geoid using the EGM84 30-arcminute grid with cubic interpolation. This is the inverse of earth_vertical_datum_convert_mean_sea_level_to_wgs84 and is stateless: results are returned directly, with no GUID, calculation order, dataset, or persistence. Latitude and Longitude MUST be WGS84 SI radians. Wgs84EllipsoidalDepth and MeanSeaLevelDepth are SI metres and positive downward; negative values are above their named reference surfaces. GeographicLib uses degrees and positive-up heights internally, but those conversions occur only at the library boundary. Samples preserve input order. GeoidUndulation is SI metres positive upward and satisfies MeanSeaLevelDepth = Wgs84EllipsoidalDepth + GeoidUndulation. Validation is atomic: one invalid position rejects the complete request with isError=true, no partial result, and structuredContent shaped as {Error, Message, Errors:[{PositionIndex, Property, Code, Message}]}; PositionIndex is zero-based for an item and null for a request-level error.";
+    public string Description => "Synchronously converts one or more depths from the WGS84 reference ellipsoid to the EGM84 mean-sea-level geoid using the EGM84 30-minute grid with cubic interpolation. This is the inverse of earth_vertical_datum_convert_mean_sea_level_to_wgs84 and is stateless: results are returned directly, with no GUID, calculation order, dataset, or persistence. Latitude and Longitude MUST be WGS84 SI radians. Wgs84EllipsoidalDepth and MeanSeaLevelDepth are SI metres and positive downward; negative values are above their named reference surfaces. GeographicLib uses degrees and positive-up heights internally, but those conversions occur only at the library boundary. Samples preserve input order. GeoidUndulation is SI metres positive upward and satisfies MeanSeaLevelDepth = Wgs84EllipsoidalDepth + GeoidUndulation. Validation is atomic: one invalid position rejects the complete request with isError=true, no partial result, and structuredContent shaped as {Error, Message, Errors:[{PositionIndex, Property, Code, Message}]}; PositionIndex is zero-based for an item and null for a request-level error.";
     public JsonNode InputSchema { get; }
-    public JsonNode OutputSchema { get; } = CreateOutputSchema();
+    public JsonNode OutputSchema { get; } = McpSemanticSchemas.Annotate(CreateOutputSchema(), typeof(Wgs84ToMeanSeaLevelResponse));
 
     public Task<JsonNode?> InvokeAsync(JsonObject? arguments, CancellationToken cancellationToken)
     {
@@ -116,7 +109,28 @@ public sealed class ConvertWgs84ToMeanSeaLevelMcpTool : IMcpTool
           "required": ["Latitude", "Longitude", "Wgs84EllipsoidalDepth"],
           "additionalProperties": false
         },
-        "modelInfo": {}
+        "modelInfo": {
+          "type": "object",
+          "properties": {
+            "Name": { "type": "string" },
+            "ID": { "type": "string" },
+            "Description": { "type": "string" },
+            "DataDateTime": { "type": ["string", "null"], "format": "date-time" },
+            "AngularGridSpacing": { "type": "number", "description": "Angular grid spacing in canonical SI radians." },
+            "Interpolation": { "type": "string" },
+            "MaximumInterpolationError": { "type": "number" },
+            "RMSInterpolationError": { "type": "number" },
+            "GeographicLibVersion": { "type": "string" },
+            "ReferenceEllipsoid": { "type": "string", "const": "WGS84" },
+            "SupportedVerticalDatums": { "type": "array", "items": { "type": "string" } },
+            "SupportedConversionDirections": { "type": "array", "items": { "type": "string" } },
+            "DepthPositiveDirection": { "type": "string", "const": "down" },
+            "IsThreadSafe": { "type": "boolean" },
+            "CoefficientSHA256": { "type": "string", "pattern": "^[0-9a-fA-F]{64}$" }
+          },
+          "required": ["Name", "ID", "Description", "DataDateTime", "AngularGridSpacing", "Interpolation", "MaximumInterpolationError", "RMSInterpolationError", "GeographicLibVersion", "ReferenceEllipsoid", "SupportedVerticalDatums", "SupportedConversionDirections", "DepthPositiveDirection", "IsThreadSafe", "CoefficientSHA256"],
+          "additionalProperties": false
+        }
       }
     }
     """)!;

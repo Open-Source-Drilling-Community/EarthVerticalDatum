@@ -2,6 +2,8 @@
 
 `Service` is the ASP.NET Core host for stateless Earth Vertical Datum REST and MCP calculations. It loads EGM84-30 at startup; only aggregate usage counters are persisted.
 
+Swagger and MCP publish the model attributes as identical structured SemanticCatalogue 0.15.0 metadata.
+
 ## Endpoints
 
 - `GET /EarthVerticalDatum/api/EarthVerticalDatum`: discovery entry point returning model information.

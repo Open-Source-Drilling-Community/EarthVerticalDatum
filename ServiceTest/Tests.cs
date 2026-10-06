@@ -144,6 +144,8 @@ public class Tests
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             Assert.That(document.RootElement.GetProperty("ID").GetString(), Is.EqualTo("EGM84-30"));
             Assert.That(document.RootElement.GetProperty("DepthPositiveDirection").GetString(), Is.EqualTo("down"));
+            Assert.That(document.RootElement.GetProperty("AngularGridSpacing").GetDouble(), Is.EqualTo(Math.PI / 360.0));
+            Assert.That(document.RootElement.TryGetProperty("GridResolutionMinutes", out _), Is.False);
         });
     }
 
@@ -195,6 +197,12 @@ public class Tests
             Assert.That(convert.GetProperty("description").GetString(), Does.Contain("no GUID"));
             Assert.That(convert.GetProperty("outputSchema").GetProperty("properties")
                 .TryGetProperty("Samples", out _), Is.True);
+            Assert.That(convert.GetProperty("outputSchema").GetProperty("$defs")
+                .GetProperty("modelInfo").GetProperty("properties")
+                .TryGetProperty("AngularGridSpacing", out _), Is.True);
+            Assert.That(convert.GetProperty("outputSchema").GetProperty("$defs")
+                .GetProperty("modelInfo").GetProperty("properties")
+                .TryGetProperty("GridResolutionMinutes", out _), Is.False);
             Assert.That(inverse.GetProperty("description").GetString(), Does.Contain("positive downward"));
             Assert.That(inverse.GetProperty("description").GetString(), Does.Contain("MeanSeaLevelDepth = Wgs84EllipsoidalDepth + GeoidUndulation"));
             Assert.That(inverse.GetProperty("inputSchema").GetProperty("properties")

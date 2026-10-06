@@ -180,43 +180,41 @@
         "properties": {
           "Name": {
             "type": "string",
-            "description": "GeographicLib geoid-grid name.",
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:model-name",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
-              "requiredContext": [ ]
+              "requiredContext": [ ],
+              "constraints": [ ]
             }
           },
           "ID": {
             "type": "string",
-            "description": "Identifier of the installed model and grid realization.",
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:model-identifier",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
-              "requiredContext": [ ]
+              "requiredContext": [ ],
+              "constraints": [ ]
             }
           },
           "Description": {
             "type": "string",
-            "description": "Description embedded in the grid file.",
             "nullable": true
           },
           "DataDateTime": {
             "type": "string",
-            "description": "Dataset timestamp from the grid header, marked UTC; not the conversion time or necessarily a publication date.",
             "format": "date-time",
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:instant",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -225,16 +223,18 @@
               "requiredContext": [
                 "time scale",
                 "timestamp representation"
-              ]
+              ],
+              "constraints": [ ],
+              "referenceDefinition": "UTC time-scale reference for a timestamp. Accepted serialization and representable precision are provider concerns.",
+              "referenceRequiredContext": [ ]
             }
           },
           "AngularGridSpacing": {
             "type": "number",
-            "description": "Angular spacing between grid nodes in SI radians along latitude and longitude; pi/360 for this grid (30 arcminutes).",
             "format": "double",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:angular-grid-spacing",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -249,31 +249,33 @@
               "requiredContext": [
                 "grid axis",
                 "angular encoding"
+              ],
+              "constraints": [
+                "Angular spacing is not a spatial distance or a model accuracy."
               ]
             }
           },
           "Interpolation": {
             "type": "string",
-            "description": "Interpolation method used to evaluate the sampled geoid.",
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:interpolation-method",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
               "requiredContext": [
                 "provider method definition"
-              ]
+              ],
+              "constraints": [ ]
             }
           },
           "MaximumInterpolationError": {
             "type": "number",
-            "description": "Estimated maximum absolute representation error in SI metres relative to the reference geoid, including quantization and interpolation; not total geoid-model accuracy.",
             "format": "double",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:geoid-approximation-error",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -291,16 +293,18 @@
                 "grid",
                 "interpolation method",
                 "error statistic"
+              ],
+              "constraints": [
+                "Not the geoid model error relative to the real Earth, nor the uncertainty of an input depth."
               ]
             }
           },
           "RMSInterpolationError": {
             "type": "number",
-            "description": "Estimated root mean square representation error in SI metres relative to the reference geoid, including quantization and interpolation; not a standard deviation or total geoid-model accuracy.",
             "format": "double",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:geoid-approximation-error",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -318,33 +322,36 @@
                 "grid",
                 "interpolation method",
                 "error statistic"
+              ],
+              "constraints": [
+                "Not the geoid model error relative to the real Earth, nor the uncertainty of an input depth."
               ]
             }
           },
           "GeographicLibVersion": {
             "type": "string",
-            "description": "Version of the calculation implementation.",
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:calculation-runtime-version",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
-              "requiredContext": [ ]
+              "requiredContext": [ ],
+              "constraints": [ ]
             }
           },
           "ReferenceEllipsoid": {
             "type": "string",
-            "description": "Ellipsoid used for geodetic coordinates and ellipsoidal depth.",
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:reference-ellipsoid",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
-              "requiredContext": [ ]
+              "requiredContext": [ ],
+              "constraints": [ ]
             }
           },
           "SupportedVerticalDatums": {
@@ -352,7 +359,6 @@
             "items": {
               "type": "string"
             },
-            "description": "Supported vertical reference surfaces; EGM84 is a model geoid, not a local tidal datum or instantaneous sea surface.",
             "nullable": true
           },
           "SupportedConversionDirections": {
@@ -360,25 +366,21 @@
             "items": {
               "type": "string"
             },
-            "description": "Supported source-to-target reference-surface pairs.",
             "nullable": true
           },
           "DepthPositiveDirection": {
             "type": "string",
-            "description": "Public depth coordinates increase downward from their named reference surfaces.",
             "nullable": true
           },
           "IsThreadSafe": {
-            "type": "boolean",
-            "description": "Whether the loaded model supports concurrent evaluations."
+            "type": "boolean"
           },
           "CoefficientSHA256": {
             "type": "string",
-            "description": "SHA-256 digest of the complete PGM grid file bytes, encoded as 64 lowercase hexadecimal characters.",
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:sha256-file-digest",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -387,6 +389,11 @@
                 "digest algorithm",
                 "source file and its purpose",
                 "digest representation"
+              ],
+              "constraints": [
+                "SHA-256 is the digest algorithm; the provider declares the encoding of its 256-bit output.",
+                "A digest is not a model version or proof of authenticity.",
+                "Compare digests only with compatible algorithms, input-byte scope and representations."
               ]
             }
           }
@@ -395,11 +402,12 @@
         "description": "Identity, accuracy, and provenance of the geoid model used for conversion.",
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.4.0",
+          "catalogueVersion": "0.15.0",
           "concept": "urn:osdc:semantic:geoid-model-provenance",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
-          "requiredContext": [ ]
+          "requiredContext": [ ],
+          "constraints": [ ]
         }
       },
       "OSDC.Drilling.EarthVerticalDatum.Model.EarthVerticalDatumPosition": {
@@ -413,7 +421,7 @@
             "format": "double",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:geodetic-latitude",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -429,7 +437,12 @@
               "requiredContext": [
                 "reference",
                 "axis/sign convention"
-              ]
+              ],
+              "constraints": [
+                "Positions are not additive extents."
+              ],
+              "referenceDefinition": "WGS84 geodetic latitude/longitude with Greenwich origin and ellipsoidal depth positive downward; not a fully specified terrestrial frame realization or epoch.",
+              "referenceRequiredContext": [ ]
             }
           },
           "Longitude": {
@@ -440,7 +453,7 @@
             "format": "double",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:geodetic-longitude",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -456,7 +469,12 @@
               "requiredContext": [
                 "reference",
                 "axis/sign convention"
-              ]
+              ],
+              "constraints": [
+                "Positions are not additive extents."
+              ],
+              "referenceDefinition": "WGS84 geodetic latitude/longitude with Greenwich origin and ellipsoidal depth positive downward; not a fully specified terrestrial frame realization or epoch.",
+              "referenceRequiredContext": [ ]
             }
           },
           "MeanSeaLevelDepth": {
@@ -465,7 +483,7 @@
             "format": "double",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:geoid-referenced-depth",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -483,6 +501,15 @@
                 "vertical convention",
                 "reference",
                 "axis/sign convention"
+              ],
+              "constraints": [
+                "Not interchangeable with a local tidal datum, instantaneous sea surface or unspecified mean sea level.",
+                "Positions are not additive extents.",
+                "A quantity of length does not make depth positions summable."
+              ],
+              "referenceDefinition": "The geoid represented by the EGM84 model, used by this provider as its mean-sea-level reference surface.",
+              "referenceRequiredContext": [
+                "model data realization and evaluation method"
               ]
             }
           }
@@ -491,14 +518,15 @@
         "description": "A WGS84 horizontal position and a mean-sea-level depth expressed using OSDC SI conventions.",
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.4.0",
+          "catalogueVersion": "0.15.0",
           "concept": "urn:osdc:semantic:geoid-depth-position",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
           "requiredContext": [
             "horizontal geodetic reference",
             "geoid model"
-          ]
+          ],
+          "constraints": [ ]
         }
       },
       "OSDC.Drilling.EarthVerticalDatum.Model.EarthVerticalDatumSample": {
@@ -512,14 +540,15 @@
             ],
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:geoid-depth-position",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
               "requiredContext": [
                 "horizontal geodetic reference",
                 "geoid model"
-              ]
+              ],
+              "constraints": [ ]
             }
           },
           "Wgs84EllipsoidalDepth": {
@@ -528,7 +557,7 @@
             "format": "double",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:ellipsoidal-depth",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -544,7 +573,14 @@
               "requiredContext": [
                 "reference",
                 "axis/sign convention"
-              ]
+              ],
+              "constraints": [
+                "Depth = -ellipsoidal height; not a geoid or mean-sea-level depth.",
+                "Positions are not additive extents.",
+                "A quantity of length does not make depth positions summable."
+              ],
+              "referenceDefinition": "WGS84 geodetic latitude/longitude with Greenwich origin and ellipsoidal depth positive downward; not a fully specified terrestrial frame realization or epoch.",
+              "referenceRequiredContext": [ ]
             }
           },
           "GeoidUndulation": {
@@ -553,7 +589,7 @@
             "format": "double",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:geoid-undulation",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -570,6 +606,9 @@
                 "reference ellipsoid",
                 "horizontal position",
                 "positive-up convention"
+              ],
+              "constraints": [
+                "A separation between reference surfaces, not a point depth coordinate."
               ]
             }
           }
@@ -578,7 +617,7 @@
         "description": "An input position and its corresponding WGS84 ellipsoidal-depth conversion.",
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.4.0",
+          "catalogueVersion": "0.15.0",
           "concept": "urn:osdc:semantic:vertical-datum-conversion-sample",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
@@ -586,7 +625,8 @@
             "source vertical reference",
             "target vertical reference",
             "horizontal position"
-          ]
+          ],
+          "constraints": [ ]
         }
       },
       "OSDC.Drilling.EarthVerticalDatum.Model.EarthVerticalDatumValidationError": {
@@ -649,7 +689,7 @@
             "description": "Positions and mean-sea-level depths to convert. The entire request is rejected when any item is invalid.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:geoid-depth-position",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -657,7 +697,8 @@
               "requiredContext": [
                 "horizontal geodetic reference",
                 "geoid model"
-              ]
+              ],
+              "constraints": [ ]
             }
           }
         },
@@ -665,7 +706,7 @@
         "description": "A stateless synchronous request to convert mean-sea-level depths to WGS84 ellipsoidal depths.",
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.4.0",
+          "catalogueVersion": "0.15.0",
           "concept": "urn:osdc:semantic:vertical-datum-conversion-request",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
@@ -673,7 +714,8 @@
             "source vertical reference",
             "target vertical reference",
             "conversion model"
-          ]
+          ],
+          "constraints": [ ]
         }
       },
       "OSDC.Drilling.EarthVerticalDatum.Model.MeanSeaLevelToWgs84Response": {
@@ -687,12 +729,13 @@
             ],
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:geoid-model-provenance",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
               "role": "urn:osdc:semantic:model-provenance",
-              "requiredContext": [ ]
+              "requiredContext": [ ],
+              "constraints": [ ]
             }
           },
           "Samples": {
@@ -703,7 +746,7 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:vertical-datum-conversion-sample",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -712,7 +755,8 @@
                 "source vertical reference",
                 "target vertical reference",
                 "horizontal position"
-              ]
+              ],
+              "constraints": [ ]
             }
           }
         },
@@ -720,11 +764,12 @@
         "description": "EGM84-30 conversion results in the same order as the request positions.",
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.4.0",
+          "catalogueVersion": "0.15.0",
           "concept": "urn:osdc:semantic:vertical-datum-conversion-response",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
-          "requiredContext": [ ]
+          "requiredContext": [ ],
+          "constraints": [ ]
         }
       },
       "OSDC.Drilling.EarthVerticalDatum.Model.UsageStatisticsEarthVerticalDatum": {
@@ -784,7 +829,7 @@
             "format": "double",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:geodetic-latitude",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -800,7 +845,12 @@
               "requiredContext": [
                 "reference",
                 "axis/sign convention"
-              ]
+              ],
+              "constraints": [
+                "Positions are not additive extents."
+              ],
+              "referenceDefinition": "WGS84 geodetic latitude/longitude with Greenwich origin and ellipsoidal depth positive downward; not a fully specified terrestrial frame realization or epoch.",
+              "referenceRequiredContext": [ ]
             }
           },
           "Longitude": {
@@ -811,7 +861,7 @@
             "format": "double",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:geodetic-longitude",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -827,7 +877,12 @@
               "requiredContext": [
                 "reference",
                 "axis/sign convention"
-              ]
+              ],
+              "constraints": [
+                "Positions are not additive extents."
+              ],
+              "referenceDefinition": "WGS84 geodetic latitude/longitude with Greenwich origin and ellipsoidal depth positive downward; not a fully specified terrestrial frame realization or epoch.",
+              "referenceRequiredContext": [ ]
             }
           },
           "Wgs84EllipsoidalDepth": {
@@ -836,7 +891,7 @@
             "format": "double",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:ellipsoidal-depth",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -852,7 +907,14 @@
               "requiredContext": [
                 "reference",
                 "axis/sign convention"
-              ]
+              ],
+              "constraints": [
+                "Depth = -ellipsoidal height; not a geoid or mean-sea-level depth.",
+                "Positions are not additive extents.",
+                "A quantity of length does not make depth positions summable."
+              ],
+              "referenceDefinition": "WGS84 geodetic latitude/longitude with Greenwich origin and ellipsoidal depth positive downward; not a fully specified terrestrial frame realization or epoch.",
+              "referenceRequiredContext": [ ]
             }
           }
         },
@@ -860,7 +922,7 @@
         "description": "A WGS84 horizontal position and ellipsoidal depth expressed using OSDC SI conventions.",
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.4.0",
+          "catalogueVersion": "0.15.0",
           "concept": "urn:osdc:semantic:geodetic-position",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
@@ -870,7 +932,8 @@
             "vertical sign",
             "reference meridian",
             "vertical representation and sign"
-          ]
+          ],
+          "constraints": [ ]
         }
       },
       "OSDC.Drilling.EarthVerticalDatum.Model.Wgs84ToMeanSeaLevelRequest": {
@@ -888,7 +951,7 @@
             "description": "Positions and WGS84 ellipsoidal depths to convert. Any invalid item rejects the entire request.",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:geodetic-position",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -899,7 +962,8 @@
                 "vertical sign",
                 "reference meridian",
                 "vertical representation and sign"
-              ]
+              ],
+              "constraints": [ ]
             }
           }
         },
@@ -907,7 +971,7 @@
         "description": "A stateless synchronous request to convert WGS84 ellipsoidal depths to mean-sea-level depths.",
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.4.0",
+          "catalogueVersion": "0.15.0",
           "concept": "urn:osdc:semantic:vertical-datum-conversion-request",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
@@ -915,7 +979,8 @@
             "source vertical reference",
             "target vertical reference",
             "conversion model"
-          ]
+          ],
+          "constraints": [ ]
         }
       },
       "OSDC.Drilling.EarthVerticalDatum.Model.Wgs84ToMeanSeaLevelResponse": {
@@ -929,12 +994,13 @@
             ],
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:geoid-model-provenance",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
               "role": "urn:osdc:semantic:model-provenance",
-              "requiredContext": [ ]
+              "requiredContext": [ ],
+              "constraints": [ ]
             }
           },
           "Samples": {
@@ -945,7 +1011,7 @@
             "nullable": true,
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:vertical-datum-conversion-sample",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -954,7 +1020,8 @@
                 "source vertical reference",
                 "target vertical reference",
                 "horizontal position"
-              ]
+              ],
+              "constraints": [ ]
             }
           }
         },
@@ -962,11 +1029,12 @@
         "description": "EGM84-30 inverse-conversion results in the same order as the request positions.",
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.4.0",
+          "catalogueVersion": "0.15.0",
           "concept": "urn:osdc:semantic:vertical-datum-conversion-response",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
-          "requiredContext": [ ]
+          "requiredContext": [ ],
+          "constraints": [ ]
         }
       },
       "OSDC.Drilling.EarthVerticalDatum.Model.Wgs84ToMeanSeaLevelSample": {
@@ -980,7 +1048,7 @@
             ],
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:geodetic-position",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -990,7 +1058,8 @@
                 "vertical sign",
                 "reference meridian",
                 "vertical representation and sign"
-              ]
+              ],
+              "constraints": [ ]
             }
           },
           "MeanSeaLevelDepth": {
@@ -999,7 +1068,7 @@
             "format": "double",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:geoid-referenced-depth",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -1017,6 +1086,15 @@
                 "vertical convention",
                 "reference",
                 "axis/sign convention"
+              ],
+              "constraints": [
+                "Not interchangeable with a local tidal datum, instantaneous sea surface or unspecified mean sea level.",
+                "Positions are not additive extents.",
+                "A quantity of length does not make depth positions summable."
+              ],
+              "referenceDefinition": "The geoid represented by the EGM84 model, used by this provider as its mean-sea-level reference surface.",
+              "referenceRequiredContext": [
+                "model data realization and evaluation method"
               ]
             }
           },
@@ -1026,7 +1104,7 @@
             "format": "double",
             "x-osdc-semantic": {
               "catalogue": "urn:osdc:semantic-catalogue",
-              "catalogueVersion": "0.4.0",
+              "catalogueVersion": "0.15.0",
               "concept": "urn:osdc:semantic:geoid-undulation",
               "curationStatus": "Reviewed",
               "assertionSource": "provider-model-attribute",
@@ -1043,6 +1121,9 @@
                 "reference ellipsoid",
                 "horizontal position",
                 "positive-up convention"
+              ],
+              "constraints": [
+                "A separation between reference surfaces, not a point depth coordinate."
               ]
             }
           }
@@ -1051,7 +1132,7 @@
         "description": "An input WGS84 position and its corresponding EGM84 mean-sea-level depth.",
         "x-osdc-semantic": {
           "catalogue": "urn:osdc:semantic-catalogue",
-          "catalogueVersion": "0.4.0",
+          "catalogueVersion": "0.15.0",
           "concept": "urn:osdc:semantic:vertical-datum-conversion-sample",
           "curationStatus": "Reviewed",
           "assertionSource": "provider-model-attribute",
@@ -1059,7 +1140,8 @@
             "source vertical reference",
             "target vertical reference",
             "horizontal position"
-          ]
+          ],
+          "constraints": [ ]
         }
       }
     }

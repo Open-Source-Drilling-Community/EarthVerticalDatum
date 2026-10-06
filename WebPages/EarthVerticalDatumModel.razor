@@ -8,7 +8,6 @@
                               UnitSystemNameChanged="@DataUtils.UpdateUnitSystemName">
 <MudPaper Class="pa-6 mt-4" Elevation="2">
     <MudText Typo="Typo.h4">Loaded geoid model</MudText>
-    <MudText>Reported errors describe quantization and interpolation relative to EGM84, not total geoid accuracy.</MudText>
     @if (model == null)
     {
         <MudProgressLinear Indeterminate="true" Class="mt-4" />
@@ -21,10 +20,9 @@
                 <tr><th>ID</th><td>@model.ID</td></tr>
                 <tr><th>Description</th><td>@model.Description</td></tr>
                 <tr><th>Data timestamp</th><td>@model.DataDateTime</td></tr>
-                <tr><th>Angular grid spacing</th><td><MudInputWithUnitAdornment QuantityName="PlaneAngleGeodesic" QuantityLabel="Angular grid spacing" ReadOnly="true" SIValueNullable="model.AngularGridSpacing" /></td></tr>
+                <tr><th>Grid resolution</th><td><MudInputWithUnit QuantityName="PlaneAngleGeodesic" QuantityLabel="Grid resolution" ReadOnly="true" SIValueNullable="@model.AngularGridSpacing" /></td></tr>
                 <tr><th>Interpolation</th><td>@model.Interpolation</td></tr>
-                <tr><th>Maximum representation error</th><td><MudInputWithUnitAdornment QuantityName="Length" QuantityLabel="Maximum error" ReadOnly="true" SIValueNullable="model.MaximumInterpolationError" /></td></tr>
-                <tr><th>RMS representation error</th><td><MudInputWithUnitAdornment QuantityName="Length" QuantityLabel="RMS error" ReadOnly="true" SIValueNullable="model.RMSInterpolationError" /></td></tr>
+                <tr><th>Maximum/RMS interpolation error</th><td>@model.MaximumInterpolationError m / @model.RMSInterpolationError m</td></tr>
                 <tr><th>Supported vertical datums</th><td>@string.Join("; ", model.SupportedVerticalDatums)</td></tr>
                 <tr><th>Supported directions</th><td>@string.Join("; ", model.SupportedConversionDirections)</td></tr>
                 <tr><th>Depth positive direction</th><td>@model.DepthPositiveDirection</td></tr>

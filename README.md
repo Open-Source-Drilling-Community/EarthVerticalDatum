@@ -2,6 +2,8 @@
 
 OSDC Earth Vertical Datum is a stateless .NET 8 microservice that converts depths in both directions between the EGM84 mean-sea-level geoid and the WGS84 reference ellipsoid. It provides synchronous REST and MCP interfaces, a generated shared client, reusable unit-aware Blazor pages, a WebApp, Docker images, and Helm charts.
 
+The domain model references `OSDC.DotnetLibraries.Drilling.SemanticCatalogue` 0.15.0. Reviewed model attributes identify WGS84 latitude/longitude, ellipsoidal depth, EGM84 geoid depth, samples, and provenance. REST/OpenAPI and all MCP input/output schemas publish the same structured `x-osdc-semantic` metadata, including reference and SI-quantity information. `AngularGridSpacing` is transmitted in canonical SI radians; display units are selected at the Web UI boundary.
+
 The service intentionally has no database, stored calculation inputs or results, calculation orders, or GUID-based retrieval workflow. A conversion request returns its result directly. Aggregate usage counters are periodically written to a JSON snapshot and restored at startup.
 
 This repository replaces the previous implementation https://github.com/Open-Source-Drilling-Community/VerticalDatum. The repository https://github.com/Open-Source-Drilling-Community/VerticalDatum is set in archive mode.

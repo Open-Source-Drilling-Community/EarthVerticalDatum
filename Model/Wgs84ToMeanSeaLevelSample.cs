@@ -1,4 +1,5 @@
 using OSDC.DotnetLibraries.Drilling.SemanticCatalogue;
+
 namespace OSDC.Drilling.EarthVerticalDatum.Model;
 
 /// <summary>An input WGS84 position and its corresponding EGM84 mean-sea-level depth.</summary>

@@ -77,15 +77,14 @@
                                                SIValueNullable="outputDepth" />
                 </MudItem>
             </MudGrid>
-            <div class="mt-4">
-                <MudInputWithUnitAdornment QuantityName="LengthStandard" QuantityLabel="EGM84 geoid undulation (positive up)"
-                                           ReadOnly="true" SIValueNullable="geoidUndulation" />
-                <MudInputWithUnitAdornment QuantityName="PlaneAngleGeodesic" QuantityLabel="Angular grid spacing"
-                                           ReadOnly="true" SIValueNullable="model?.AngularGridSpacing" />
-            </div>
-            <MudText Typo="Typo.caption">
-                Model: @model?.Name (@model?.ID), @model?.Interpolation interpolation.
+            <MudText Typo="Typo.body2" Class="mt-4">
+                EGM84 geoid undulation: @geoidUndulation?.ToString("G12") m, positive upward.
             </MudText>
+            <MudText Typo="Typo.caption" Class="mt-2">Model: @model?.Name (@model?.ID), @model?.Interpolation interpolation.</MudText>
+            <MudInputWithUnitAdornment QuantityName="PlaneAngleGeodesic"
+                                       QuantityLabel="Model grid spacing"
+                                       ReadOnly="true"
+                                       SIValueNullable="@model?.AngularGridSpacing" />
         }
     </MudPaper>
 </MudUnitAndReferenceChoiceTag>
