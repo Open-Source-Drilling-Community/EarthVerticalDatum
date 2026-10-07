@@ -8,4 +8,6 @@ Author: Eric Cayeux
 
 Company: NORCE Research
 
-Semantic contract tests compare model attributes with live REST, committed merged OpenAPI, and both MCP conversion schemas. They verify catalogue 0.4.0, curated status, quantities, grid spacing in radians, removal of the legacy field, and the schema server URL beneath the API PathBase.
+Semantic contract tests compare model attributes with live REST, committed merged OpenAPI, and both MCP conversion schemas. They verify catalogue 0.16.0, curated status, quantities, grid spacing in radians, removal of the legacy field, and the schema server URL beneath the API PathBase.
+
+The `tools/list` transport regression verifies all four explicit behavior hints on every registered tool: read-only and idempotent, non-destructive, and closed-world.

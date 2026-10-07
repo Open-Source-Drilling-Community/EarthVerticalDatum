@@ -26,4 +26,6 @@ Author: Eric Cayeux
 
 Company: NORCE Research
 
-REST and MCP expose the same SemanticCatalogue 0.4.0 bindings through `x-osdc-semantic`. The OpenAPI filter reads Model attributes; both conversion tools reuse the model-info schema. AngularGridSpacing replaces GridResolutionMinutes, with pi/360 radians for EGM84-30. The schema endpoint preserves the API PathBase in its server URL.
+REST and MCP expose the same SemanticCatalogue 0.16.0 bindings through `x-osdc-semantic`. The OpenAPI filter reads Model attributes; both conversion tools reuse the model-info schema. AngularGridSpacing replaces GridResolutionMinutes, with pi/360 radians for EGM84-30. The schema endpoint preserves the API PathBase in its server URL.
+
+All four MCP tools explicitly publish `readOnlyHint=true`, `destructiveHint=false`, `idempotentHint=true` and `openWorldHint=false`. They inspect or calculate using the bundled model without creating domain resources. Aggregate usage-counter changes do not change these domain behavior guarantees. After deploying this change, refresh MCP discovery in consuming DrillWeaver installations.

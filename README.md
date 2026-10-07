@@ -108,4 +108,6 @@ Author: Eric Cayeux
 
 Company: NORCE Research
 
-The Model uses the published SemanticCatalogue 0.4.0 NuGet package. Curated model attributes publish matching `x-osdc-semantic` annotations in REST/OpenAPI and MCP. `AngularGridSpacing` replaces `GridResolutionMinutes` entirely: its value is pi/360 radians (30 arcminutes); there is no compatibility alias. Clients must regenerate and consume radians. See [semantic bindings](SEMANTICS.md).
+The Model uses the published SemanticCatalogue 0.16.0 NuGet package. Curated model attributes publish matching `x-osdc-semantic` annotations in REST/OpenAPI and MCP. `AngularGridSpacing` replaces `GridResolutionMinutes` entirely: its value is pi/360 radians (30 arcminutes); there is no compatibility alias. Clients must regenerate and consume radians. See [semantic bindings](SEMANTICS.md).
+
+All four MCP tools explicitly publish `readOnlyHint=true`, `destructiveHint=false`, `idempotentHint=true` and `openWorldHint=false`. They inspect or calculate using the bundled model without creating domain resources. Aggregate usage-counter changes do not change these domain behavior guarantees. After deploying this change, refresh MCP discovery in consuming DrillWeaver installations.

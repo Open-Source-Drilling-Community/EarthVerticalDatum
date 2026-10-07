@@ -27,7 +27,16 @@ internal sealed class McpServerToolAdapter : McpServerTool
             Name = tool.Name,
             Description = tool.Description,
             InputSchema = JsonSerializer.SerializeToElement(tool.InputSchema, JsonOptions),
-            OutputSchema = JsonSerializer.SerializeToElement(tool.OutputSchema, JsonOptions)
+            OutputSchema = JsonSerializer.SerializeToElement(tool.OutputSchema, JsonOptions),
+            // All registered tools inspect or calculate from the bundled model. Usage
+            // counters do not change the domain result or create calculation resources.
+            Annotations = new ToolAnnotations
+            {
+                ReadOnlyHint = true,
+                DestructiveHint = false,
+                IdempotentHint = true,
+                OpenWorldHint = false
+            }
         };
     }
 

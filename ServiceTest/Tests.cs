@@ -184,6 +184,14 @@ public class Tests
             Assert.That(tools.GetArrayLength(), Is.EqualTo(4));
             Assert.That(tools.EnumerateArray().All(tool => tool.TryGetProperty("inputSchema", out _)), Is.True);
             Assert.That(tools.EnumerateArray().All(tool => tool.TryGetProperty("outputSchema", out _)), Is.True);
+            foreach (JsonElement tool in tools.EnumerateArray())
+            {
+                JsonElement annotations = tool.GetProperty("annotations");
+                Assert.That(annotations.GetProperty("readOnlyHint").GetBoolean(), Is.True);
+                Assert.That(annotations.GetProperty("destructiveHint").GetBoolean(), Is.False);
+                Assert.That(annotations.GetProperty("idempotentHint").GetBoolean(), Is.True);
+                Assert.That(annotations.GetProperty("openWorldHint").GetBoolean(), Is.False);
+            }
             Assert.That(content, Does.Not.Contain("usage_statistics").IgnoreCase);
         });
 
