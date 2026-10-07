@@ -55,7 +55,7 @@ public class SemanticContractTests
                 {
                     Assert.That(JsonNode.DeepEquals(schema[SemanticMetadata.ExtensionName], SemanticMetadata.For(type)), Is.True,
                         $"{source}: {type.Name}; actual={schema[SemanticMetadata.ExtensionName]?.ToJsonString()}; expected={SemanticMetadata.For(type)?.ToJsonString()}");
-                    Assert.That(schema[SemanticMetadata.ExtensionName]!["catalogueVersion"]!.GetValue<string>(), Is.EqualTo("0.15.0"));
+                    Assert.That(schema[SemanticMetadata.ExtensionName]!["catalogueVersion"]!.GetValue<string>(), Is.EqualTo("0.16.0"));
                     Assert.That(schema[SemanticMetadata.ExtensionName]!["curationStatus"]!.GetValue<string>(), Is.EqualTo("Reviewed"));
                     foreach (var property in type.GetProperties())
                     {
