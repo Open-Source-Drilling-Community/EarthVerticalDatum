@@ -6,9 +6,14 @@ namespace OSDC.Drilling.EarthVerticalDatum.Service.Mcp;
 
 internal static class McpSemanticSchemas
 {
-    public static JsonNode Annotate(JsonNode schema, Type modelType)
+    public static JsonNode Annotate(JsonNode schema, Type modelType, string? operationRole = null)
     {
-        if (schema is JsonObject root) Walk(root, root, modelType);
+        if (schema is JsonObject root)
+        {
+            Walk(root, root, modelType);
+            if (operationRole is not null && root[SemanticMetadata.ExtensionName] is JsonObject metadata)
+                metadata["role"] = operationRole;
+        }
         return schema;
     }
 

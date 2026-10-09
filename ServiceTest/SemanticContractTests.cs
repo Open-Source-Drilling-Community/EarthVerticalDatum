@@ -53,9 +53,15 @@ public class SemanticContractTests
                     ("MCP", mcp)
                 })
                 {
-                    Assert.That(JsonNode.DeepEquals(schema[SemanticMetadata.ExtensionName], SemanticMetadata.For(type)), Is.True,
+                    JsonObject actualTypeMetadata = (JsonObject)schema[SemanticMetadata.ExtensionName]!.DeepClone();
+                    if (source == "MCP" && (type == typeof(MeanSeaLevelToWgs84Request) || type == typeof(Wgs84ToMeanSeaLevelRequest)))
+                    {
+                        Assert.That(actualTypeMetadata["role"]!.GetValue<string>(), Is.EqualTo(Concepts.StatelessEvaluation));
+                        actualTypeMetadata.Remove("role");
+                    }
+                    Assert.That(JsonNode.DeepEquals(actualTypeMetadata, SemanticMetadata.For(type)), Is.True,
                         $"{source}: {type.Name}; actual={schema[SemanticMetadata.ExtensionName]?.ToJsonString()}; expected={SemanticMetadata.For(type)?.ToJsonString()}");
-                    Assert.That(schema[SemanticMetadata.ExtensionName]!["catalogueVersion"]!.GetValue<string>(), Is.EqualTo("0.16.0"));
+                    Assert.That(schema[SemanticMetadata.ExtensionName]!["catalogueVersion"]!.GetValue<string>(), Is.EqualTo("0.18.0"));
                     Assert.That(schema[SemanticMetadata.ExtensionName]!["curationStatus"]!.GetValue<string>(), Is.EqualTo("Reviewed"));
                     foreach (var property in type.GetProperties())
                     {

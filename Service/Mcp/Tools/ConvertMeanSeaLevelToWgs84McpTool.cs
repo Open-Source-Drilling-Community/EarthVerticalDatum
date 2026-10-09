@@ -22,7 +22,7 @@ public sealed class ConvertMeanSeaLevelToWgs84McpTool : IMcpTool
         evaluator_ = evaluator;
         statistics_ = statistics;
         maximumPositions_ = options.Value.MaximumPositionsPerRequest;
-        InputSchema = McpSemanticSchemas.Annotate(CreateInputSchema(maximumPositions_), typeof(MeanSeaLevelToWgs84Request));
+        InputSchema = McpSemanticSchemas.Annotate(CreateInputSchema(maximumPositions_), typeof(MeanSeaLevelToWgs84Request), OSDC.DotnetLibraries.Drilling.SemanticCatalogue.Concepts.StatelessEvaluation);
     }
 
     public string Name => "earth_vertical_datum_convert_mean_sea_level_to_wgs84";

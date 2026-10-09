@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using OSDC.Drilling.EarthVerticalDatum.Model;
+using OSDC.DotnetLibraries.Drilling.SemanticCatalogue;
 
 namespace OSDC.Drilling.EarthVerticalDatum.Service.Mcp.Tools;
 
@@ -8,7 +9,7 @@ public sealed class GetEarthVerticalDatumModelInfoMcpTool(EarthVerticalDatumEval
 {
     public string Name => "earth_vertical_datum_get_model_info";
     public string Description => "Returns the loaded EGM84-30 geoid model identity and provenance, including its 30-minute grid resolution, explicit cubic interpolation, published interpolation-error estimates, data timestamp, GeographicLib runtime version, WGS84 reference ellipsoid, positive-down API convention, thread-safety mode, and coefficient-file SHA-256. Use it for traceability and deployment comparison. It performs no conversion and persists nothing.";
-    public JsonNode InputSchema { get; } = JsonNode.Parse("""{"type":"object","properties":{},"additionalProperties":false}""")!;
+    public JsonNode InputSchema { get; } = CreateInputSchema();
     public JsonNode OutputSchema { get; } = McpSemanticSchemas.Annotate(JsonNode.Parse("""
     {
       "type": "object",
@@ -37,4 +38,11 @@ public sealed class GetEarthVerticalDatumModelInfoMcpTool(EarthVerticalDatumEval
 
     public Task<JsonNode?> InvokeAsync(JsonObject? arguments, CancellationToken cancellationToken) =>
         Task.FromResult(JsonSerializer.SerializeToNode(evaluator.ModelInfo));
+
+    private static JsonNode CreateInputSchema()
+    {
+        var schema = (JsonObject)JsonNode.Parse("""{"type":"object","properties":{},"additionalProperties":false}""")!;
+        schema[SemanticMetadata.ExtensionName] = SemanticMetadata.Create(Concepts.GeoidModelProvenance, Concepts.ResourceRetrieval, assertionSource: "provider-mcp-operation");
+        return schema;
+    }
 }
