@@ -21,3 +21,9 @@ The calculator displays geoid undulation through LengthStandard (1 mm meaningful
 ## Package release 1.1.4
 
 This release packages the current WebPages and generated contracts. Update consuming WebApps to `OSDC.Drilling.EarthVerticalDatum.WebPages` version `1.1.4` after it is available on nuget.org.
+
+## Trusted NuGet publishing
+
+The `publish-webpages-nuget.yml` workflow authenticates with GitHub OIDC through `NuGet/login@v1`; no long-lived `NUGET_API_KEY` secret is used. Set `NUGET_USER` to the nuget.org profile username as a repository variable (a repository secret is also accepted). The publishing job requests `contents: read` and `id-token: write` and obtains its temporary credential immediately before uploading.
+
+On nuget.org, the package owner must configure a trusted-publishing policy for `Open-Source-Drilling-Community/EarthVerticalDatum`, workflow filename `publish-webpages-nuget.yml`, with permission to push new versions of `OSDC.Drilling.EarthVerticalDatum.WebPages`. Leave the policy environment empty because the workflow does not declare a GitHub environment. Trigger the workflow manually with the intended version or push a `webpages-v*` tag. Already published versions are skipped.

@@ -100,7 +100,7 @@ The charts pull from DigiWells Docker Hub and create no PodDisruptionBudget. The
 
 ## Publishing WebPages
 
-`WebPages` packages as `OSDC.Drilling.EarthVerticalDatum.WebPages`. The NuGet workflow uses the private repository secret `NUGET_API_KEY`; trigger it manually with a version or push a `webpages-v*` tag.
+`WebPages` packages as `OSDC.Drilling.EarthVerticalDatum.WebPages`. The NuGet workflow uses GitHub OIDC trusted publishing and the `NUGET_USER` repository variable; configure the nuget.org policy described in `WebPages/README.md`, then trigger it manually with a version or push a `webpages-v*` tag.
 
 Project code is MIT licensed. EGM84 grid and GeographicLib attribution is in [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
 
