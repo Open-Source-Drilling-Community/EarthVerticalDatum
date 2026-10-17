@@ -17,3 +17,7 @@ Author: Eric Cayeux
 Company: NORCE Research
 
 The calculator displays geoid undulation through LengthStandard (1 mm meaningful display precision). AngularGridSpacing uses PlaneAngleGeodesic; model representation errors use Length. All unit-bearing values follow the selected unit system while REST values remain SI.
+
+## Package release 1.1.4
+
+This release packages the current WebPages and generated contracts. Update consuming WebApps to `OSDC.Drilling.EarthVerticalDatum.WebPages` version `1.1.4` after it is available on nuget.org.
