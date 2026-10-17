@@ -11,3 +11,5 @@ Company: NORCE Research
 Semantic contract tests compare model attributes with live REST, committed merged OpenAPI, and both MCP conversion schemas. They verify catalogue 0.16.0, curated status, quantities, grid spacing in radians, removal of the legacy field, and the schema server URL beneath the API PathBase.
 
 The `tools/list` transport regression verifies all four explicit behavior hints on every registered tool: read-only and idempotent, non-destructive, and closed-world.
+
+`GeoidModelPageTests` renders the loaded geoid-model page with the real unit-aware field and verifies that grid resolution accepts its read-only parameter, retains the SI angular value and renders a read-only input. Remote unit-system discovery is stubbed for this rendering regression.

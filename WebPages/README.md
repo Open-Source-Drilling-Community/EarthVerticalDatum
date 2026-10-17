@@ -31,3 +31,9 @@ On nuget.org, the package owner must configure a trusted-publishing policy for `
 ## Package release 1.1.5
 
 Requires OSDC.UnitConversion.DrillingRazorMudComponents 3.4.9 so embedded unit selectors consume bounded UnitSystem discovery pages. Rebuild consuming WebApps after upgrading this package.
+
+The geoid-model grid resolution uses a read-only `MudInputWithUnitAdornment` so the selected angle unit is displayed without exposing an editable model setting.
+
+## Package release 1.1.6
+
+Fixes the Geoid Model page rendering failure by using the read-only unit-adorned grid-resolution component.
